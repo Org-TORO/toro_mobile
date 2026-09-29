@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Image,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
@@ -14,6 +15,7 @@ import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-nat
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
+const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,17 +30,7 @@ export default function LoginScreen() {
         >
           <View style={styles.card}>
             <View style={styles.brand}>
-              <View style={styles.logoMark}>
-                <View style={styles.logoLineTop} />
-                <View style={styles.logoHead}>
-                  {Array.from({ length: 9 }).map((_, index) => (
-                    <View key={index} style={styles.logoDot} />
-                  ))}
-                </View>
-                <View style={styles.logoLineBottom} />
-              </View>
-              <Text style={styles.logoText}>TORO</Text>
-              <Text style={styles.tagline}>TRUSTLESS OCEANIC{"\n"}RECORD OF ORIGIN</Text>
+              <Image source={logoImage} resizeMode="contain" style={styles.brandLogo} />
             </View>
 
             <Text style={styles.title}>CHÀO MỪNG ĐÃ ĐẾN VỚI{"\n"}TORO</Text>
@@ -140,8 +132,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: "rgba(255, 255, 255, 0.78)",
     paddingHorizontal: 32,
-    paddingBottom: 32,
-    paddingTop: 58,
     shadowColor: "#82A7CE",
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.22,
@@ -151,69 +141,9 @@ const styles = StyleSheet.create({
   brand: {
     alignItems: "center",
   },
-  logoMark: {
-    width: 84,
-    height: 58,
-    justifyContent: "center",
-  },
-  logoHead: {
-    position: "absolute",
-    right: 0,
-    top: 3,
-    width: 58,
-    height: 52,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignContent: "center",
-    justifyContent: "center",
-    borderColor: "#0F3762",
-    borderRadius: 14,
-    borderWidth: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    transform: [{ rotate: "45deg" }],
-  },
-  logoDot: {
-    width: 5,
-    height: 5,
-    margin: 3,
-    borderRadius: 3,
-    backgroundColor: "#0F3762",
-  },
-  logoLineTop: {
-    position: "absolute",
-    left: 0,
-    top: 17,
-    width: 36,
-    height: 15,
-    borderColor: "#0F3762",
-    borderTopWidth: 5,
-    borderLeftWidth: 5,
-    borderTopLeftRadius: 8,
-  },
-  logoLineBottom: {
-    position: "absolute",
-    left: 15,
-    top: 28,
-    width: 25,
-    height: 24,
-    borderColor: "#0F3762",
-    borderLeftWidth: 5,
-  },
-  logoText: {
-    marginTop: 6,
-    color: "#123D68",
-    fontSize: 24,
-    fontWeight: "800",
-    letterSpacing: 8,
-  },
-  tagline: {
-    marginTop: 1,
-    color: "#123D68",
-    fontSize: 5,
-    fontWeight: "800",
-    lineHeight: 7,
-    textAlign: "center",
+  brandLogo: {
+    width: 142,
+    height: 135,
   },
   title: {
     marginTop: 36,
