@@ -1,5 +1,5 @@
-import { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
   KeyboardAvoidingView,
@@ -15,13 +15,24 @@ import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-nat
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import LoginSuccessSection from "./_components/login-success-section";
+import { useLogin } from "../feature/authentication/login/login.hook";
 
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginSucceeded, setLoginSucceeded] = useState(false);
+  const {
+    email,
+    password,
+    showPassword,
+    isSubmitting,
+    loginSucceeded,
+    fieldErrors,
+    errorMessage,
+    updateField,
+    togglePasswordVisibility,
+    submitLogin,
+  } = useLogin();
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.background}>
@@ -47,27 +58,35 @@ export default function LoginScreen() {
                   <TextInput
                     autoCapitalize="none"
                     autoCorrect={false}
+                    editable={!isSubmitting}
                     keyboardType="email-address"
+                    onChangeText={(value) => updateField("email", value)}
                     placeholder="Tên đăng nhập hoặc email"
                     placeholderTextColor="#8A93A3"
                     style={styles.input}
                     textContentType="username"
+                    value={email}
                   />
                 </View>
+                {fieldErrors.email ? <Text style={styles.errorText}>{fieldErrors.email}</Text> : null}
 
                 <View style={styles.inputWrap}>
                   <LockKeyhole color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
                   <TextInput
+                    editable={!isSubmitting}
+                    onChangeText={(value) => updateField("password", value)}
                     placeholder="Mật khẩu"
                     placeholderTextColor="#8A93A3"
                     secureTextEntry={!showPassword}
                     style={styles.input}
                     textContentType="password"
+                    value={password}
                   />
                   <Pressable
                     accessibilityLabel={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                    disabled={isSubmitting}
                     hitSlop={12}
-                    onPress={() => setShowPassword((value) => !value)}
+                    onPress={togglePasswordVisibility}
                     style={styles.eyeButton}
                   >
                     {showPassword ? (
@@ -77,16 +96,29 @@ export default function LoginScreen() {
                     )}
                   </Pressable>
                 </View>
+                {fieldErrors.password ? (
+                  <Text style={styles.errorText}>{fieldErrors.password}</Text>
+                ) : null}
 
                 <Pressable style={styles.forgotButton}>
                   <Text style={styles.forgotText}>Quên mật khẩu?</Text>
                 </Pressable>
 
+                {errorMessage ? <Text style={styles.formErrorText}>{errorMessage}</Text> : null}
+
                 <Pressable
-                  onPress={() => setLoginSucceeded(true)}
-                  style={({ pressed }) => [styles.loginButton, pressed && styles.pressed]}
+                  disabled={isSubmitting}
+                  onPress={submitLogin}
+                  style={({ pressed }) => [
+                    styles.loginButton,
+                    (pressed || isSubmitting) && styles.pressed,
+                  ]}
                 >
-                  <Text style={styles.loginText}>Đăng nhập</Text>
+                  {isSubmitting ? (
+                    <ActivityIndicator color={colors.white} />
+                  ) : (
+                    <Text style={styles.loginText}>Đăng nhập</Text>
+                  )}
                 </Pressable>
 
                 <View style={styles.dividerRow}>
@@ -195,6 +227,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingVertical: 0,
   },
+  errorText: {
+    color: "#C92A2A",
+    fontSize: 13,
+    fontWeight: "700",
+    marginBottom: 12,
+    marginTop: -12,
+  },
   eyeButton: {
     width: 28,
     height: 28,
@@ -210,6 +249,14 @@ const styles = StyleSheet.create({
     color: "#155BDE",
     fontSize: 15,
     fontWeight: "800",
+  },
+  formErrorText: {
+    color: "#C92A2A",
+    fontSize: 14,
+    fontWeight: "800",
+    marginBottom: 14,
+    marginTop: -10,
+    textAlign: "center",
   },
   loginButton: {
     height: 56,
