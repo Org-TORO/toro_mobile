@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
@@ -44,7 +45,7 @@ export default function LoginScreen() {
 
             <View style={styles.form}>
               <View style={styles.inputWrap}>
-                <Text style={styles.inputIcon}>♙</Text>
+                <UserRound color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
                 <TextInput
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -57,7 +58,7 @@ export default function LoginScreen() {
               </View>
 
               <View style={styles.inputWrap}>
-                <Text style={styles.inputIcon}>▧</Text>
+                <LockKeyhole color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
                 <TextInput
                   placeholder="Mật khẩu"
                   placeholderTextColor="#8A93A3"
@@ -71,7 +72,11 @@ export default function LoginScreen() {
                   onPress={() => setShowPassword((value) => !value)}
                   style={styles.eyeButton}
                 >
-                  <Text style={styles.eyeIcon}>{showPassword ? "◉" : "◎"}</Text>
+                  {showPassword ? (
+                    <EyeOff color="#2E73FF" size={22} strokeWidth={2.5} />
+                  ) : (
+                    <Eye color="#2E73FF" size={22} strokeWidth={2.5} />
+                  )}
                 </Pressable>
               </View>
 
@@ -95,7 +100,7 @@ export default function LoginScreen() {
             </View>
 
             <Pressable accessibilityLabel="Làm mới" style={styles.refreshButton}>
-              <Text style={styles.refreshIcon}>↻</Text>
+              <RefreshCw color="#1766DD" size={28} strokeWidth={2.6} />
             </Pressable>
           </View>
         </KeyboardAvoidingView>
@@ -240,9 +245,7 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     width: 24,
-    color: "#2E73FF",
-    fontSize: 20,
-    fontWeight: "700",
+    marginRight: 2,
   },
   input: {
     flex: 1,
@@ -257,11 +260,6 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: "center",
     justifyContent: "center",
-  },
-  eyeIcon: {
-    color: "#2E73FF",
-    fontSize: 20,
-    fontWeight: "800",
   },
   forgotButton: {
     alignSelf: "flex-end",
@@ -337,11 +335,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 16,
     elevation: 6,
-  },
-  refreshIcon: {
-    color: "#1766DD",
-    fontSize: 28,
-    fontWeight: "700",
-    lineHeight: 31,
   },
 });
