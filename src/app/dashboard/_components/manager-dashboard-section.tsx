@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
 import {
   Bell,
   Box,
@@ -112,6 +113,7 @@ const navItems = [
 ];
 
 export default function ManagerDashboardSection() {
+  const router = useRouter();
   const userInfo = useAuthStore((state) => state.userInfo);
   const displayName = userInfo?.fullName || "Nguyễn Văn A";
   const displayRole = formatRole(userInfo?.organizationRole ?? userInfo?.role);
@@ -216,7 +218,11 @@ export default function ManagerDashboardSection() {
             ))}
           </View>
 
-          <Pressable accessibilityLabel="Thêm mới" style={styles.addButton}>
+          <Pressable
+            accessibilityLabel="Thêm mới sổ ghi"
+            onPress={() => router.push("/dashboard/ledger/create-source-ledger")}
+            style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
+          >
             <Plus color="#0D2B57" size={30} strokeWidth={2.6} />
           </Pressable>
         </View>
@@ -701,5 +707,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 12,
     elevation: 9,
+  },
+  pressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.99 }],
   },
 });
