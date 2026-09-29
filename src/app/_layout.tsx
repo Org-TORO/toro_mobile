@@ -7,8 +7,7 @@ setupInterceptors();
 export default function RootLayout() {
   return (
     <Stack initialRouteName="index">
-      <Stack.Screen name="index" options={{ title: "Home" }} />
-      <Stack.Screen name="login" options={{ title: "Login" }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
 }

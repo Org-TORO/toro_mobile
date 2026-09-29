@@ -1,24 +1,347 @@
-import { useRouter } from "expo-router";
-import { Button, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 
-function HomeScreen() {
+export default function LoginScreen() {
+  const [showPassword, setShowPassword] = useState(false);
 
-    const router = useRouter();
+  return (
+    <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.background}>
+      <StatusBar style="dark" />
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.select({ ios: "padding", android: undefined })}
+          style={styles.keyboardView}
+        >
+          <View style={styles.card}>
+            <View style={styles.brand}>
+              <View style={styles.logoMark}>
+                <View style={styles.logoLineTop} />
+                <View style={styles.logoHead}>
+                  {Array.from({ length: 9 }).map((_, index) => (
+                    <View key={index} style={styles.logoDot} />
+                  ))}
+                </View>
+                <View style={styles.logoLineBottom} />
+              </View>
+              <Text style={styles.logoText}>TORO</Text>
+              <Text style={styles.tagline}>TRUSTLESS OCEANIC{"\n"}RECORD OF ORIGIN</Text>
+            </View>
 
-    return (
-        <View>
-            <Text>
-                Home Screen
-            </Text>
+            <Text style={styles.title}>CHÀO MỪNG ĐÃ ĐẾN VỚI{"\n"}TORO</Text>
 
-            <Button 
-                title="Login" 
-                onPress={() => router.push("/login")}
-            />
-        </View>
-    )
+            <View style={styles.form}>
+              <View style={styles.inputWrap}>
+                <Text style={styles.inputIcon}>♙</Text>
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  placeholder="Tên đăng nhập hoặc email"
+                  placeholderTextColor="#8A93A3"
+                  style={styles.input}
+                  textContentType="username"
+                />
+              </View>
+
+              <View style={styles.inputWrap}>
+                <Text style={styles.inputIcon}>▧</Text>
+                <TextInput
+                  placeholder="Mật khẩu"
+                  placeholderTextColor="#8A93A3"
+                  secureTextEntry={!showPassword}
+                  style={styles.input}
+                  textContentType="password"
+                />
+                <Pressable
+                  accessibilityLabel={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                  hitSlop={12}
+                  onPress={() => setShowPassword((value) => !value)}
+                  style={styles.eyeButton}
+                >
+                  <Text style={styles.eyeIcon}>{showPassword ? "◉" : "◎"}</Text>
+                </Pressable>
+              </View>
+
+              <Pressable style={styles.forgotButton}>
+                <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+              </Pressable>
+
+              <Pressable style={({ pressed }) => [styles.loginButton, pressed && styles.pressed]}>
+                <Text style={styles.loginText}>Đăng nhập</Text>
+              </Pressable>
+
+              <View style={styles.dividerRow}>
+                <View style={styles.divider} />
+                <Text style={styles.dividerText}>hoặc</Text>
+                <View style={styles.divider} />
+              </View>
+
+              <Pressable style={({ pressed }) => [styles.registerButton, pressed && styles.pressed]}>
+                <Text style={styles.registerText}>Đăng ký</Text>
+              </Pressable>
+            </View>
+
+            <Pressable accessibilityLabel="Làm mới" style={styles.refreshButton}>
+              <Text style={styles.refreshIcon}>↻</Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ImageBackground>
+  );
 }
 
+const colors = {
+  blue: "#2F74D8",
+  deepBlue: "#07509F",
+  line: "#D6E7FB",
+  textMuted: "#8A93A3",
+  white: "#FFFFFF",
+};
 
-export default HomeScreen;
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: "#DCEFFD",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 38,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 342,
+    minHeight: 756,
+    alignItems: "center",
+    borderRadius: 22,
+    backgroundColor: "rgba(255, 255, 255, 0.78)",
+    paddingHorizontal: 32,
+    paddingBottom: 32,
+    paddingTop: 58,
+    shadowColor: "#82A7CE",
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.22,
+    shadowRadius: 28,
+    elevation: 14,
+  },
+  brand: {
+    alignItems: "center",
+  },
+  logoMark: {
+    width: 84,
+    height: 58,
+    justifyContent: "center",
+  },
+  logoHead: {
+    position: "absolute",
+    right: 0,
+    top: 3,
+    width: 58,
+    height: 52,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignContent: "center",
+    justifyContent: "center",
+    borderColor: "#0F3762",
+    borderRadius: 14,
+    borderWidth: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    transform: [{ rotate: "45deg" }],
+  },
+  logoDot: {
+    width: 5,
+    height: 5,
+    margin: 3,
+    borderRadius: 3,
+    backgroundColor: "#0F3762",
+  },
+  logoLineTop: {
+    position: "absolute",
+    left: 0,
+    top: 17,
+    width: 36,
+    height: 15,
+    borderColor: "#0F3762",
+    borderTopWidth: 5,
+    borderLeftWidth: 5,
+    borderTopLeftRadius: 8,
+  },
+  logoLineBottom: {
+    position: "absolute",
+    left: 15,
+    top: 28,
+    width: 25,
+    height: 24,
+    borderColor: "#0F3762",
+    borderLeftWidth: 5,
+  },
+  logoText: {
+    marginTop: 6,
+    color: "#123D68",
+    fontSize: 24,
+    fontWeight: "800",
+    letterSpacing: 8,
+  },
+  tagline: {
+    marginTop: 1,
+    color: "#123D68",
+    fontSize: 5,
+    fontWeight: "800",
+    lineHeight: 7,
+    textAlign: "center",
+  },
+  title: {
+    marginTop: 36,
+    color: colors.deepBlue,
+    fontSize: 19,
+    fontWeight: "800",
+    lineHeight: 24,
+    textAlign: "center",
+  },
+  form: {
+    width: "100%",
+    marginTop: 30,
+  },
+  inputWrap: {
+    height: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: "#EEF4FA",
+    borderRadius: 16,
+    borderWidth: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    marginBottom: 19,
+    paddingHorizontal: 17,
+    shadowColor: "#98B7D9",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  inputIcon: {
+    width: 24,
+    color: "#2E73FF",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  input: {
+    flex: 1,
+    height: "100%",
+    color: "#253A56",
+    fontSize: 16,
+    fontWeight: "500",
+    paddingVertical: 0,
+  },
+  eyeButton: {
+    width: 28,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  eyeIcon: {
+    color: "#2E73FF",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  forgotButton: {
+    alignSelf: "flex-end",
+    marginBottom: 28,
+    marginTop: -4,
+  },
+  forgotText: {
+    color: "#155BDE",
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  loginButton: {
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 15,
+    backgroundColor: colors.blue,
+    shadowColor: "#1F5EBB",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.26,
+    shadowRadius: 18,
+    elevation: 7,
+  },
+  pressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.99 }],
+  },
+  loginText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 31,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.line,
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: "#125BDC",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  registerButton: {
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "#98C8FF",
+    borderRadius: 15,
+    borderWidth: 2,
+    backgroundColor: "rgba(255, 255, 255, 0.42)",
+  },
+  registerText: {
+    color: "#113EB1",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  refreshButton: {
+    width: 57,
+    height: 57,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 29,
+    backgroundColor: colors.white,
+    marginTop: 32,
+    shadowColor: "#7DA5CA",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  refreshIcon: {
+    color: "#1766DD",
+    fontSize: 28,
+    fontWeight: "700",
+    lineHeight: 31,
+  },
+});
