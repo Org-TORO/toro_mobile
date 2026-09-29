@@ -14,11 +14,14 @@ import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import LoginSuccessSection from "./_components/login-success-section";
+
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginSucceeded, setLoginSucceeded] = useState(false);
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.background}>
@@ -28,73 +31,80 @@ export default function LoginScreen() {
           behavior={Platform.select({ ios: "padding", android: undefined })}
           style={styles.keyboardView}
         >
-          <View style={styles.card}>
-            <View style={styles.brand}>
-              <Image source={logoImage} resizeMode="contain" style={styles.brandLogo} />
-            </View>
-
-            <Text style={styles.title}>CHÀO MỪNG ĐÃ ĐẾN VỚI{"\n"}TORO</Text>
-
-            <View style={styles.form}>
-              <View style={styles.inputWrap}>
-                <UserRound color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
-                <TextInput
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="email-address"
-                  placeholder="Tên đăng nhập hoặc email"
-                  placeholderTextColor="#8A93A3"
-                  style={styles.input}
-                  textContentType="username"
-                />
+          {loginSucceeded ? (
+            <LoginSuccessSection />
+          ) : (
+            <View style={styles.card}>
+              <View style={styles.brand}>
+                <Image source={logoImage} resizeMode="contain" style={styles.brandLogo} />
               </View>
 
-              <View style={styles.inputWrap}>
-                <LockKeyhole color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
-                <TextInput
-                  placeholder="Mật khẩu"
-                  placeholderTextColor="#8A93A3"
-                  secureTextEntry={!showPassword}
-                  style={styles.input}
-                  textContentType="password"
-                />
+              <Text style={styles.title}>CHÀO MỪNG ĐÃ ĐẾN VỚI{"\n"}TORO</Text>
+
+              <View style={styles.form}>
+                <View style={styles.inputWrap}>
+                  <UserRound color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
+                  <TextInput
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    keyboardType="email-address"
+                    placeholder="Tên đăng nhập hoặc email"
+                    placeholderTextColor="#8A93A3"
+                    style={styles.input}
+                    textContentType="username"
+                  />
+                </View>
+
+                <View style={styles.inputWrap}>
+                  <LockKeyhole color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
+                  <TextInput
+                    placeholder="Mật khẩu"
+                    placeholderTextColor="#8A93A3"
+                    secureTextEntry={!showPassword}
+                    style={styles.input}
+                    textContentType="password"
+                  />
+                  <Pressable
+                    accessibilityLabel={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                    hitSlop={12}
+                    onPress={() => setShowPassword((value) => !value)}
+                    style={styles.eyeButton}
+                  >
+                    {showPassword ? (
+                      <EyeOff color="#2E73FF" size={22} strokeWidth={2.5} />
+                    ) : (
+                      <Eye color="#2E73FF" size={22} strokeWidth={2.5} />
+                    )}
+                  </Pressable>
+                </View>
+
+                <Pressable style={styles.forgotButton}>
+                  <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+                </Pressable>
+
                 <Pressable
-                  accessibilityLabel={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                  hitSlop={12}
-                  onPress={() => setShowPassword((value) => !value)}
-                  style={styles.eyeButton}
+                  onPress={() => setLoginSucceeded(true)}
+                  style={({ pressed }) => [styles.loginButton, pressed && styles.pressed]}
                 >
-                  {showPassword ? (
-                    <EyeOff color="#2E73FF" size={22} strokeWidth={2.5} />
-                  ) : (
-                    <Eye color="#2E73FF" size={22} strokeWidth={2.5} />
-                  )}
+                  <Text style={styles.loginText}>Đăng nhập</Text>
+                </Pressable>
+
+                <View style={styles.dividerRow}>
+                  <View style={styles.divider} />
+                  <Text style={styles.dividerText}>hoặc</Text>
+                  <View style={styles.divider} />
+                </View>
+
+                <Pressable style={({ pressed }) => [styles.registerButton, pressed && styles.pressed]}>
+                  <Text style={styles.registerText}>Đăng ký</Text>
                 </Pressable>
               </View>
 
-              <Pressable style={styles.forgotButton}>
-                <Text style={styles.forgotText}>Quên mật khẩu?</Text>
-              </Pressable>
-
-              <Pressable style={({ pressed }) => [styles.loginButton, pressed && styles.pressed]}>
-                <Text style={styles.loginText}>Đăng nhập</Text>
-              </Pressable>
-
-              <View style={styles.dividerRow}>
-                <View style={styles.divider} />
-                <Text style={styles.dividerText}>hoặc</Text>
-                <View style={styles.divider} />
-              </View>
-
-              <Pressable style={({ pressed }) => [styles.registerButton, pressed && styles.pressed]}>
-                <Text style={styles.registerText}>Đăng ký</Text>
+              <Pressable accessibilityLabel="Làm mới" style={styles.refreshButton}>
+                <RefreshCw color="#1766DD" size={28} strokeWidth={2.6} />
               </Pressable>
             </View>
-
-            <Pressable accessibilityLabel="Làm mới" style={styles.refreshButton}>
-              <RefreshCw color="#1766DD" size={28} strokeWidth={2.6} />
-            </Pressable>
-          </View>
+          )}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </ImageBackground>
