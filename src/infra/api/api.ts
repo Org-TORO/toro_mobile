@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://192.168.1.68:8080/api",
+  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
   withCredentials: true,
 });
 
 export const refreshApi = axios.create({
-  baseURL: "http://192.168.1.68:8080/api",
+  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
   withCredentials: true,
 });

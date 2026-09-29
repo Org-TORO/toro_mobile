@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-native";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import LoginSuccessSection from "./_components/login-success-section";
@@ -21,6 +22,7 @@ const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
+  const [focusedField, setFocusedField] = useState<"email" | "password" | null>(null);
   const {
     email,
     password,
@@ -53,14 +55,22 @@ export default function LoginScreen() {
               <Text style={styles.title}>CHÀO MỪNG ĐÃ ĐẾN VỚI{"\n"}TORO</Text>
 
               <View style={styles.form}>
-                <View style={styles.inputWrap}>
-                  <UserRound color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
+                <View
+                  style={[
+                    styles.inputWrap,
+                    focusedField === "email" && styles.focusedInputWrap,
+                    fieldErrors.email && styles.errorInputWrap,
+                  ]}
+                >
+                  <UserRound color="#2E73FF" size={19} strokeWidth={2.4} style={styles.inputIcon} />
                   <TextInput
                     autoCapitalize="none"
                     autoCorrect={false}
                     editable={!isSubmitting}
                     keyboardType="email-address"
+                    onBlur={() => setFocusedField(null)}
                     onChangeText={(value) => updateField("email", value)}
+                    onFocus={() => setFocusedField("email")}
                     placeholder="Tên đăng nhập hoặc email"
                     placeholderTextColor="#8A93A3"
                     style={styles.input}
@@ -70,11 +80,19 @@ export default function LoginScreen() {
                 </View>
                 {fieldErrors.email ? <Text style={styles.errorText}>{fieldErrors.email}</Text> : null}
 
-                <View style={styles.inputWrap}>
-                  <LockKeyhole color="#2E73FF" size={21} strokeWidth={2.4} style={styles.inputIcon} />
+                <View
+                  style={[
+                    styles.inputWrap,
+                    focusedField === "password" && styles.focusedInputWrap,
+                    fieldErrors.password && styles.errorInputWrap,
+                  ]}
+                >
+                  <LockKeyhole color="#2E73FF" size={19} strokeWidth={2.4} style={styles.inputIcon} />
                   <TextInput
                     editable={!isSubmitting}
+                    onBlur={() => setFocusedField(null)}
                     onChangeText={(value) => updateField("password", value)}
+                    onFocus={() => setFocusedField("password")}
                     placeholder="Mật khẩu"
                     placeholderTextColor="#8A93A3"
                     secureTextEntry={!showPassword}
@@ -90,9 +108,9 @@ export default function LoginScreen() {
                     style={styles.eyeButton}
                   >
                     {showPassword ? (
-                      <EyeOff color="#2E73FF" size={22} strokeWidth={2.5} />
+                      <EyeOff color="#2E73FF" size={20} strokeWidth={2.5} />
                     ) : (
-                      <Eye color="#2E73FF" size={22} strokeWidth={2.5} />
+                      <Eye color="#2E73FF" size={20} strokeWidth={2.5} />
                     )}
                   </Pressable>
                 </View>
@@ -133,7 +151,7 @@ export default function LoginScreen() {
               </View>
 
               <Pressable accessibilityLabel="Làm mới" style={styles.refreshButton}>
-                <RefreshCw color="#1766DD" size={28} strokeWidth={2.6} />
+                <RefreshCw color="#1766DD" size={24} strokeWidth={2.6} />
               </Pressable>
             </View>
           )}
@@ -163,17 +181,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 38,
+    paddingHorizontal: 22,
+    paddingVertical: 30,
   },
   card: {
     width: "100%",
-    maxWidth: 342,
-    minHeight: 756,
+    maxWidth: 322,
+    minHeight: 690,
     alignItems: "center",
-    borderRadius: 22,
+    borderRadius: 20,
     backgroundColor: "rgba(255, 255, 255, 0.78)",
-    paddingHorizontal: 32,
+    paddingHorizontal: 28,
     shadowColor: "#82A7CE",
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.22,
@@ -184,36 +202,48 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   brandLogo: {
-    width: 142,
-    height: 135,
+    width: 122,
+    height: 116,
   },
   title: {
-    marginTop: 36,
+    marginTop: 28,
     color: colors.deepBlue,
-    fontSize: 19,
+    fontSize: 17,
     fontWeight: "800",
-    lineHeight: 24,
+    lineHeight: 22,
     textAlign: "center",
   },
   form: {
     width: "100%",
-    marginTop: 30,
+    marginTop: 26,
   },
   inputWrap: {
-    height: 56,
+    height: 52,
     flexDirection: "row",
     alignItems: "center",
     borderColor: "#EEF4FA",
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1,
     backgroundColor: "rgba(255, 255, 255, 0.9)",
-    marginBottom: 19,
-    paddingHorizontal: 17,
+    marginBottom: 16,
+    paddingHorizontal: 15,
     shadowColor: "#98B7D9",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 14,
     elevation: 3,
+  },
+  focusedInputWrap: {
+    borderColor: "#2E73FF",
+    borderWidth: 1.5,
+    shadowColor: "#2E73FF",
+    shadowOpacity: 0.18,
+  },
+  errorInputWrap: {
+    borderColor: "#C92A2A",
+    borderWidth: 1.5,
+    shadowColor: "#C92A2A",
+    shadowOpacity: 0.14,
   },
   inputIcon: {
     width: 24,
@@ -223,46 +253,46 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     color: "#253A56",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     paddingVertical: 0,
   },
   errorText: {
     color: "#C92A2A",
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
     marginBottom: 12,
     marginTop: -12,
   },
   eyeButton: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     alignItems: "center",
     justifyContent: "center",
   },
   forgotButton: {
     alignSelf: "flex-end",
-    marginBottom: 28,
+    marginBottom: 24,
     marginTop: -4,
   },
   forgotText: {
     color: "#155BDE",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "800",
   },
   formErrorText: {
     color: "#C92A2A",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "800",
     marginBottom: 14,
     marginTop: -10,
     textAlign: "center",
   },
   loginButton: {
-    height: 56,
+    height: 52,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 15,
+    borderRadius: 14,
     backgroundColor: colors.blue,
     shadowColor: "#1F5EBB",
     shadowOffset: { width: 0, height: 12 },
@@ -276,13 +306,13 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "800",
   },
   dividerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 31,
+    marginVertical: 25,
   },
   divider: {
     flex: 1,
@@ -292,31 +322,32 @@ const styles = StyleSheet.create({
   dividerText: {
     marginHorizontal: 12,
     color: "#125BDC",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "800",
   },
   registerButton: {
-    height: 56,
+    height: 52,
     alignItems: "center",
     justifyContent: "center",
     borderColor: "#98C8FF",
-    borderRadius: 15,
+    borderRadius: 14,
     borderWidth: 2,
     backgroundColor: "rgba(255, 255, 255, 0.42)",
   },
   registerText: {
     color: "#113EB1",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "800",
   },
   refreshButton: {
-    width: 57,
-    height: 57,
+    width: 50,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 29,
+    borderRadius: 25,
     backgroundColor: colors.white,
-    marginTop: 32,
+    marginBottom: 18,
+    marginTop: 24,
     shadowColor: "#7DA5CA",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.22,
