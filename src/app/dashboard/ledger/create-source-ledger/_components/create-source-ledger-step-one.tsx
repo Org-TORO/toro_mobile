@@ -1,9 +1,6 @@
 import type { ComponentType } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
 import {
-  ArrowLeft,
   Building2,
   ChevronDown,
   ChevronRight,
@@ -11,24 +8,15 @@ import {
   Grid2X2,
   History,
   Plus,
-  Settings,
   Ship,
   UserRound,
 } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type IconComponent = ComponentType<{
   color?: string;
   size?: number;
   strokeWidth?: number;
 }>;
-
-const steps = [
-  { value: "1", label: "THÔNG TIN\nSỔ GHI" },
-  { value: "2", label: "THÔNG TIN\nLÔ" },
-  { value: "3", label: "KIỂM TRA\nXÁC NHẬN" },
-  { value: "4", label: "KÝ & GHI\nBLOCKCHAIN" },
-];
 
 const navItems = [
   { label: "Dashboard", icon: Grid2X2 },
@@ -46,130 +34,87 @@ const vesselInfo = [
 ];
 
 export default function CreateSourceLedgerStepOne() {
-  const router = useRouter();
-
   return (
     <View style={styles.screen}>
-      <StatusBar style="dark" />
-      <SafeAreaView edges={["top"]} style={styles.safeArea}>
-        <View style={styles.header}>
-          <Pressable
-            accessibilityLabel="Quay lại"
-            hitSlop={12}
-            onPress={() => router.back()}
-            style={styles.headerIconButton}
-          >
-            <ArrowLeft color={colors.navBlue} size={27} strokeWidth={2.35} />
+      <ScrollView
+        bounces={false}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.formBlock}>
+          <Text style={styles.pageTitle}>THÔNG TIN SỔ GHI</Text>
+          <Text style={styles.pageDescription}>
+            Ghi nhận nguồn nguyên liệu và tạo lô cá nguyên liệu ban đầu
+          </Text>
+
+          <Text style={styles.groupTitle}>A. Thông tin sổ ghi *</Text>
+
+          <FieldLabel text="Nhà cung cấp (Supplier) *" />
+          <Pressable style={styles.supplierSelect}>
+            <View style={styles.supplierIcon}>
+              <Building2 color={colors.brandBlueStrong} size={19} strokeWidth={2.4} />
+            </View>
+            <View style={styles.supplierTextBlock}>
+              <Text numberOfLines={1} style={styles.supplierName}>
+                Công ty TNHH Hải Sản Biển Đông
+              </Text>
+              <Text style={styles.supplierCode}>SUP-001</Text>
+            </View>
+            <ChevronRight color="#91A0B2" size={20} strokeWidth={2.2} />
           </Pressable>
-          <Text style={styles.headerTitle}>Sổ ghi thông tin</Text>
-          <Pressable accessibilityLabel="Cài đặt" hitSlop={12} style={styles.headerIconButton}>
-            <Settings color="#52647B" size={22} strokeWidth={2.4} />
-          </Pressable>
-        </View>
 
-        <ScrollView
-          bounces={false}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <Stepper />
-
-          <View style={styles.formBlock}>
-            <Text style={styles.pageTitle}>THÔNG TIN SỔ GHI</Text>
-            <Text style={styles.pageDescription}>
-              Ghi nhận nguồn nguyên liệu và tạo lô cá nguyên liệu ban đầu
-            </Text>
-
-            <Text style={styles.groupTitle}>A. Thông tin sổ ghi *</Text>
-
-            <FieldLabel text="Nhà cung cấp (Supplier) *" />
-            <Pressable style={styles.supplierSelect}>
-              <View style={styles.supplierIcon}>
-                <Building2 color={colors.brandBlueStrong} size={19} strokeWidth={2.4} />
-              </View>
-              <View style={styles.supplierTextBlock}>
-                <Text numberOfLines={1} style={styles.supplierName}>
-                  Công ty TNHH Hải Sản Biển Đông
-                </Text>
-                <Text style={styles.supplierCode}>SUP-001</Text>
-              </View>
-              <ChevronRight color="#91A0B2" size={20} strokeWidth={2.2} />
-            </Pressable>
-
-            <FieldLabel text="Loại nguồn *" />
-            <View style={styles.radioRow}>
-              <RadioOption label="Tàu cá" selected />
-              <RadioOption label="Trang trại" />
-            </View>
-
-            <FieldLabel text="Tàu cá *" />
-            <Pressable style={styles.selectInput}>
-              <Text style={styles.selectText}>VN-12345</Text>
-              <ChevronDown color="#91A0B2" size={19} strokeWidth={2.3} />
-            </Pressable>
-
-            <View style={styles.infoPanel}>
-              <View style={styles.infoTitleRow}>
-                <Ship color="#155BDE" size={16} strokeWidth={2.6} />
-                <Text style={styles.infoTitle}>Thông tin tàu cá</Text>
-              </View>
-              <View style={styles.infoDivider} />
-              {vesselInfo.map((item) => (
-                <View key={item.label} style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValue}>{item.value}</Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.actionRow}>
-              <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
-                <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
-              </Pressable>
-              <Pressable style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
-                <Text style={styles.primaryButtonText}>Tiếp tục</Text>
-              </Pressable>
-            </View>
+          <FieldLabel text="Loại nguồn *" />
+          <View style={styles.radioRow}>
+            <RadioOption label="Tàu cá" selected />
+            <RadioOption label="Trang trại" />
           </View>
-        </ScrollView>
 
-        <View style={styles.bottomNav}>
-          <View style={styles.navRow}>
-            {navItems.slice(0, 2).map((item) => (
-              <NavItem key={item.label} {...item} />
-            ))}
-            <View style={styles.navSpacer} />
-            {navItems.slice(2).map((item) => (
-              <NavItem key={item.label} {...item} />
+          <FieldLabel text="Tàu cá *" />
+          <Pressable style={styles.selectInput}>
+            <Text style={styles.selectText}>VN-12345</Text>
+            <ChevronDown color="#91A0B2" size={19} strokeWidth={2.3} />
+          </Pressable>
+
+          <View style={styles.infoPanel}>
+            <View style={styles.infoTitleRow}>
+              <Ship color="#155BDE" size={16} strokeWidth={2.6} />
+              <Text style={styles.infoTitle}>Thông tin tàu cá</Text>
+            </View>
+            <View style={styles.infoDivider} />
+            {vesselInfo.map((item) => (
+              <View key={item.label} style={styles.infoRow}>
+                <Text style={styles.infoLabel}>{item.label}</Text>
+                <Text style={styles.infoValue}>{item.value}</Text>
+              </View>
             ))}
           </View>
 
-          <Pressable accessibilityLabel="Thêm mới sổ ghi" style={styles.addButton}>
-            <Plus color={colors.navBlue} size={30} strokeWidth={2.6} />
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    </View>
-  );
-}
-
-function Stepper() {
-  return (
-    <View style={styles.stepper}>
-      {steps.map((step, index) => {
-        const isActive = index === 0;
-
-        return (
-          <View key={step.value} style={styles.stepWrap}>
-            {index > 0 ? <View style={styles.stepLineLeft} /> : null}
-            {index < steps.length - 1 ? <View style={styles.stepLineRight} /> : null}
-            <View style={[styles.stepCircle, isActive && styles.stepCircleActive]}>
-              <Text style={[styles.stepValue, isActive && styles.stepValueActive]}>{step.value}</Text>
-            </View>
-            <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>{step.label}</Text>
+          <View style={styles.actionRow}>
+            <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
+              <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
+            </Pressable>
+            <Pressable style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
+              <Text style={styles.primaryButtonText}>Tiếp tục</Text>
+            </Pressable>
           </View>
-        );
-      })}
+        </View>
+      </ScrollView>
+
+      <View style={styles.bottomNav}>
+        <View style={styles.navRow}>
+          {navItems.slice(0, 2).map((item) => (
+            <NavItem key={item.label} {...item} />
+          ))}
+          <View style={styles.navSpacer} />
+          {navItems.slice(2).map((item) => (
+            <NavItem key={item.label} {...item} />
+          ))}
+        </View>
+
+        <Pressable accessibilityLabel="Thêm mới sổ ghi" style={styles.addButton}>
+          <Plus color={colors.navBlue} size={30} strokeWidth={2.6} />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -207,16 +152,13 @@ function NavItem({
 }
 
 const colors = {
-  brandBlue: "#2F74D8",
   brandBlueStrong: "#2E73FF",
-  brandBlueDeep: "#07509F",
   navBlue: "#0D2B57",
   screen: "#FFFFFF",
   surfaceSoft: "#F1F7FE",
   line: "#D6E7FB",
   border: "#DDE8F3",
   textPrimary: "#253A56",
-  textMuted: "#8A93A3",
   white: "#FFFFFF",
 };
 
@@ -233,92 +175,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.screen,
   },
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.screen,
-  },
-  header: {
-    height: 66,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEF2F6",
-    paddingHorizontal: 20,
-  },
-  headerIconButton: {
-    width: 35,
-    height: 35,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    flex: 1,
-    color: colors.navBlue,
-    fontSize: 21,
-    fontWeight: "800",
-    marginLeft: 8,
-  },
   scrollContent: {
     paddingBottom: 116,
-  },
-  stepper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 35,
-    paddingTop: 17,
-  },
-  stepWrap: {
-    width: 70,
-    alignItems: "center",
-  },
-  stepLineLeft: {
-    position: "absolute",
-    top: 16,
-    right: 42,
-    width: 42,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  stepLineRight: {
-    position: "absolute",
-    top: 16,
-    left: 42,
-    width: 42,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  stepCircle: {
-    width: 35,
-    height: 35,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#B9C9DA",
-    borderRadius: 18,
-    backgroundColor: colors.white,
-  },
-  stepCircleActive: {
-    borderColor: colors.navBlue,
-    backgroundColor: colors.navBlue,
-  },
-  stepValue: {
-    color: "#748397",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  stepValueActive: {
-    color: colors.white,
-  },
-  stepLabel: {
-    color: "#8A9AB0",
-    fontSize: 9,
-    fontWeight: "700",
-    lineHeight: 11,
-    marginTop: 8,
-    textAlign: "center",
-  },
-  stepLabelActive: {
-    color: colors.navBlue,
   },
   formBlock: {
     paddingHorizontal: 28,
