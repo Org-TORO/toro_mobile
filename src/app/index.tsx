@@ -1,11 +1,10 @@
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { Button, Text, View } from "react-native";
-import { NavigationProp } from "../../infra/routes/app.route";
 
 
 function HomeScreen() {
 
-    const navigation = useNavigation<NavigationProp>();
+    const router = useRouter();
 
     return (
         <View>
@@ -15,7 +14,7 @@ function HomeScreen() {
 
             <Button 
                 title="Login" 
-                onPress={() => navigation.navigate("Login")}
+                onPress={() => router.push("/login")}
             />
         </View>
     )
