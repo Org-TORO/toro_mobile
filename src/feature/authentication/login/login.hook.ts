@@ -19,6 +19,8 @@ const initialForm: LoginForm = {
   password: "",
 };
 
+type LoginFocusedField = keyof LoginForm | null;
+
 const getErrorMessage = (
   error: AxiosError<FailureResponse<LoginFieldErrors | string>>
 ): {
@@ -58,6 +60,7 @@ const getErrorMessage = (
 export const useLogin = () => {
   const setAuthSession = useAuthStore((state) => state.setAuthSession);
   const [form, setForm] = useState<LoginForm>(initialForm);
+  const [focusedField, setFocusedField] = useState<LoginFocusedField>(null);
   const [fieldErrors, setFieldErrors] = useState<LoginFieldErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -68,6 +71,14 @@ export const useLogin = () => {
     setForm((currentForm) => ({ ...currentForm, [field]: value }));
     setFieldErrors((currentErrors) => ({ ...currentErrors, [field]: undefined }));
     setErrorMessage("");
+  };
+
+  const focusField = (field: keyof LoginForm) => {
+    setFocusedField(field);
+  };
+
+  const blurField = () => {
+    setFocusedField(null);
   };
 
   const togglePasswordVisibility = () => {
@@ -116,12 +127,15 @@ export const useLogin = () => {
   return {
     email: form.email,
     password: form.password,
+    focusedField,
     showPassword,
     isSubmitting,
     loginSucceeded,
     fieldErrors,
     errorMessage,
     updateField,
+    focusField,
+    blurField,
     togglePasswordVisibility,
     submitLogin,
   };

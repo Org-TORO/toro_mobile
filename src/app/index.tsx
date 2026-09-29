@@ -11,8 +11,9 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
 import { Eye, EyeOff, LockKeyhole, RefreshCw, UserRound } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import LoginSuccessSection from "./_components/login-success-section";
@@ -22,19 +23,34 @@ const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
-  const [focusedField, setFocusedField] = useState<"email" | "password" | null>(null);
+  const router = useRouter();
   const {
     email,
     password,
+    focusedField,
     showPassword,
     isSubmitting,
     loginSucceeded,
     fieldErrors,
     errorMessage,
     updateField,
+    focusField,
+    blurField,
     togglePasswordVisibility,
     submitLogin,
   } = useLogin();
+
+  useEffect(() => {
+    if (!loginSucceeded) {
+      return;
+    }
+
+    const redirectTimer = setTimeout(() => {
+      router.replace("/dashboard");
+    }, 650);
+
+    return () => clearTimeout(redirectTimer);
+  }, [loginSucceeded, router]);
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.background}>
@@ -68,9 +84,9 @@ export default function LoginScreen() {
                     autoCorrect={false}
                     editable={!isSubmitting}
                     keyboardType="email-address"
-                    onBlur={() => setFocusedField(null)}
+                    onBlur={blurField}
                     onChangeText={(value) => updateField("email", value)}
-                    onFocus={() => setFocusedField("email")}
+                    onFocus={() => focusField("email")}
                     placeholder="Tên đăng nhập hoặc email"
                     placeholderTextColor="#8A93A3"
                     style={styles.input}
@@ -90,9 +106,9 @@ export default function LoginScreen() {
                   <LockKeyhole color="#2E73FF" size={19} strokeWidth={2.4} style={styles.inputIcon} />
                   <TextInput
                     editable={!isSubmitting}
-                    onBlur={() => setFocusedField(null)}
+                    onBlur={blurField}
                     onChangeText={(value) => updateField("password", value)}
-                    onFocus={() => setFocusedField("password")}
+                    onFocus={() => focusField("password")}
                     placeholder="Mật khẩu"
                     placeholderTextColor="#8A93A3"
                     secureTextEntry={!showPassword}

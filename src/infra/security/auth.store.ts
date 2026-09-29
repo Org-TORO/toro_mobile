@@ -7,6 +7,8 @@ export type AuthenticatedUser = {
   email: string;
   phoneNumber: string;
   role: string;
+  organizationRole: string | null;
+  organizationId: number | null;
 };
 
 type AuthState = {
