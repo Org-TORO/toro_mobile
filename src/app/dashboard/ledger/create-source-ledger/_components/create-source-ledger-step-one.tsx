@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   Building2,
   ChevronDown,
@@ -87,8 +94,11 @@ export default function CreateSourceLedgerStepOne({
     selectedVessel,
     isLoadingVessels,
     vesselsErrorMessage,
+    isCreatingSourceLedger,
+    createSourceLedgerErrorMessage,
     getVessels,
     selectVessel,
+    createSourceLedger,
   } = useCreateSourceLedgerStepOne();
   const vesselInfo = getVesselInfo(selectedVessel);
   const vesselSelectText = getVesselSelectText({
@@ -114,6 +124,16 @@ export default function CreateSourceLedgerStepOne({
     setShowVesselOptions(false);
     void getVessels();
   };
+
+  const handleContinue = async () => {
+    const sourceLedger = await createSourceLedger();
+
+    if (sourceLedger) {
+      onContinue();
+    }
+  };
+
+  const canCreateSourceLedger = Boolean(selectedVessel) && !isCreatingSourceLedger;
 
   return (
     <View style={styles.screen}>
@@ -217,15 +237,30 @@ export default function CreateSourceLedgerStepOne({
             )}
           </View>
 
+          {createSourceLedgerErrorMessage ? (
+            <Text style={styles.submitErrorText}>
+              {createSourceLedgerErrorMessage}
+            </Text>
+          ) : null}
+
           <View style={styles.actionRow}>
             <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
               <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
             </Pressable>
             <Pressable
-              onPress={onContinue}
-              style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
+              disabled={!canCreateSourceLedger}
+              onPress={handleContinue}
+              style={({ pressed }) => [
+                styles.primaryButton,
+                !canCreateSourceLedger && styles.disabledButton,
+                pressed && styles.pressed,
+              ]}
             >
-              <Text style={styles.primaryButtonText}>Tiếp tục</Text>
+              {isCreatingSourceLedger ? (
+                <ActivityIndicator color={colors.white} size="small" />
+              ) : (
+                <Text style={styles.primaryButtonText}>Tiếp tục</Text>
+              )}
             </Pressable>
           </View>
         </View>
@@ -491,6 +526,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     lineHeight: 17,
   },
+  submitErrorText: {
+    color: "#C43D3D",
+    fontSize: 11,
+    fontWeight: "700",
+    lineHeight: 17,
+    marginTop: 9,
+    textAlign: "center",
+  },
   actionRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -500,6 +543,8 @@ const styles = StyleSheet.create({
     width: 124,
     height: 34,
     alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
     justifyContent: "center",
     borderWidth: 1.4,
     borderColor: "#CAD8E8",
@@ -521,6 +566,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.navBlue,
     marginLeft: 8,
+  },
+  disabledButton: {
+    opacity: 0.56,
   },
   primaryButtonText: {
     color: colors.white,

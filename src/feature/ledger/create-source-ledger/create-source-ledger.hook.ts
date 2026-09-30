@@ -1,27 +1,93 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { isAxiosError } from "axios";
+import { isAxiosError, type AxiosResponse } from "axios";
 
 import { api } from "../../../infra/api/api";
-import type { FailureResponse } from "../../../infra/api/failure.response.";
+import {
+  ERROR_CODES,
+  type FailureResponse,
+} from "../../../infra/api/failure.response.";
 import type SuccessResponse from "../../../infra/api/success.response.";
+import { useAuthStore } from "../../../infra/security/auth.store";
 
 const GET_VESSELS_ENDPOINT = "/refs/create-source-ledger/get-vessels";
 const GET_MAIN_STAFFS_ENDPOINT = "/refs/create-source-ledger/get-main-staffs";
+const CREATE_SOURCE_LEDGER_ENDPOINT = "/api/ledgers/create-source-ledger";
+const DEFAULT_SOURCE_TYPE = "VESSEL";
+
+type SourceType = "VESSEL" | "FARM";
+
+type VesselOption = {
+  id: number;
+  registrationNumber: string;
+  fishingMethod: string;
+  captainName: string;
+  fishingLicense: string;
+  imoNumber: string;
+};
+
+type CreateSourceLedgerRequest = {
+  organizationId: number;
+  vesselId: number;
+  sourceType: SourceType;
+};
+
+type SourceLedgerSummary = {
+  id: number;
+  organizationId: number;
+  vesselId: number;
+  sourceType: SourceType;
+  createdAt: string;
+};
+
+type CreateSourceLedgerFieldErrors = Partial<
+  Record<keyof CreateSourceLedgerRequest, string>
+>;
+
+const getCreateSourceLedgerErrorMessage = (
+  error: unknown
+): string => {
+  console.log(error);
+  
+  if (!isAxiosError<FailureResponse<CreateSourceLedgerFieldErrors | string>>(error)) {
+    return "Unable to create source ledger";
+  }
+
+  const responseData = error.response?.data;
+  const responseErrors = responseData?.errors;
+
+  if (
+    responseData?.code === ERROR_CODES.INPUT_VALIDATION_ERROR &&
+    responseErrors &&
+    typeof responseErrors === "object"
+  ) {
+    const fieldMessages = Object.values(responseErrors).filter(Boolean);
+
+    return fieldMessages[0] ?? responseData.message;
+  }
+
+  if (
+    responseData?.code === ERROR_CODES.BUSINESS_VALIDATION_ERROR &&
+    typeof responseErrors === "string"
+  ) {
+    return responseErrors;
+  }
+
+  return responseData?.message ?? "Unable to create source ledger";
+};
 
 export const useCreateSourceLedgerStepOne = () => {
-  const [vessels, setVessels] = useState<
-    {
-      id: number;
-      registrationNumber: string;
-      fishingMethod: string;
-      captainName: string;
-      fishingLicense: string;
-      imoNumber: string;
-    }[]
-  >([]);
+  const organizationId = useAuthStore(
+    (state) => state.userInfo?.organizationId ?? null
+  );
+  const [vessels, setVessels] = useState<VesselOption[]>([]);
   const [selectedVesselId, setSelectedVesselId] = useState<number | null>(null);
   const [isLoadingVessels, setIsLoadingVessels] = useState(true);
   const [vesselsErrorMessage, setVesselsErrorMessage] = useState("");
+  const [isCreatingSourceLedger, setIsCreatingSourceLedger] = useState(false);
+  const [createSourceLedgerErrorMessage, setCreateSourceLedgerErrorMessage] =
+    useState("");
+  const [createdSourceLedger, setCreatedSourceLedger] =
+    useState<SourceLedgerSummary | null>(null);
 
   const selectedVessel = useMemo(
     () => vessels.find((vessel) => vessel.id === selectedVesselId) ?? null,
@@ -33,18 +99,9 @@ export const useCreateSourceLedgerStepOne = () => {
     setVesselsErrorMessage("");
 
     try {
-      const response = await api.get<
-        SuccessResponse<
-          {
-            id: number;
-            registrationNumber: string;
-            fishingMethod: string;
-            captainName: string;
-            fishingLicense: string;
-            imoNumber: string;
-          }[]
-        >
-      >(GET_VESSELS_ENDPOINT);
+      const response = await api.get<SuccessResponse<VesselOption[]>>(
+        GET_VESSELS_ENDPOINT
+      );
       const nextVessels = response.data.data;
 
       setVessels(nextVessels);
@@ -74,6 +131,48 @@ export const useCreateSourceLedgerStepOne = () => {
 
   const selectVessel = (vesselId: number) => {
     setSelectedVesselId(vesselId);
+    setCreateSourceLedgerErrorMessage("");
+    setCreatedSourceLedger(null);
+  };
+
+  const createSourceLedger = async () => {
+    setCreateSourceLedgerErrorMessage("");
+    setCreatedSourceLedger(null);
+
+    if (!organizationId) {
+      setCreateSourceLedgerErrorMessage("Organization id is required");
+      return null;
+    }
+
+    if (!selectedVesselId) {
+      setCreateSourceLedgerErrorMessage("Vessel id is required");
+      return null;
+    }
+
+    setIsCreatingSourceLedger(true);
+
+    try {
+      const response = await api.post<SuccessResponse<SourceLedgerSummary>>(
+        CREATE_SOURCE_LEDGER_ENDPOINT,
+        {
+          organizationId,
+          vesselId: selectedVesselId,
+          sourceType: DEFAULT_SOURCE_TYPE,
+        }
+      );
+
+      setCreatedSourceLedger(response.data.data);
+
+      return response.data.data;
+    } catch (error) {
+      setCreateSourceLedgerErrorMessage(
+        getCreateSourceLedgerErrorMessage(error)
+      );
+
+      return null;
+    } finally {
+      setIsCreatingSourceLedger(false);
+    }
   };
 
   useEffect(() => {
@@ -86,8 +185,12 @@ export const useCreateSourceLedgerStepOne = () => {
     selectedVesselId,
     isLoadingVessels,
     vesselsErrorMessage,
+    isCreatingSourceLedger,
+    createSourceLedgerErrorMessage,
+    createdSourceLedger,
     getVessels,
     selectVessel,
+    createSourceLedger,
   };
 };
 
