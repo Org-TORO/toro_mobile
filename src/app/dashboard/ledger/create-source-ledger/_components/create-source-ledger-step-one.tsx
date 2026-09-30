@@ -1,39 +1,116 @@
-import type { ComponentType } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   Building2,
   ChevronDown,
   ChevronRight,
-  FileText,
-  Grid2X2,
-  History,
-  Plus,
   Ship,
-  UserRound,
 } from "lucide-react-native";
 
-type IconComponent = ComponentType<{
-  color?: string;
-  size?: number;
-  strokeWidth?: number;
-}>;
+import { useCreateSourceLedgerStepOne } from "../../../../../feature/ledger/create-source-ledger/create-source-ledger.hook";
 
-const navItems = [
-  { label: "Dashboard", icon: Grid2X2 },
-  { label: "Sổ ghi", icon: FileText, active: true },
-  { label: "Lịch sử", icon: History },
-  { label: "Cá nhân", icon: UserRound },
-];
+//////////////////////////////////////////////
+// COMPONENTS
+//////////////////////////////////////////////
+function getVesselInfo(
+  vessel: {
+    registrationNumber: string;
+    fishingMethod: string;
+    captainName: string;
+    fishingLicense: string;
+    imoNumber: string;
+  } | null
+) {
+  if (!vessel) {
+    return [];
+  }
 
-const vesselInfo = [
-  { label: "Mã đăng ký tàu", value: "VN-12345" },
-  { label: "Thuyền trưởng", value: "Nguyễn Văn Bình" },
-  { label: "Phương pháp đánh bắt", value: "Câu tay" },
-  { label: "Giấy phép khai thác", value: "LIC-987654" },
-  { label: "IMO Number", value: "IMO-7654321" },
-];
+  return [
+    { label: "Mã đăng ký tàu", value: vessel.registrationNumber },
+    { label: "Thuyền trưởng", value: vessel.captainName },
+    { label: "Phương pháp đánh bắt", value: vessel.fishingMethod },
+    { label: "Giấy phép khai thác", value: vessel.fishingLicense },
+    { label: "IMO Number", value: vessel.imoNumber },
+  ];
+}
 
+function getVesselSelectText({
+  isLoadingVessels,
+  selectedVessel,
+  vesselsErrorMessage,
+}: {
+  isLoadingVessels: boolean;
+  selectedVessel: { registrationNumber: string } | null;
+  vesselsErrorMessage: string;
+}) {
+  if (isLoadingVessels) {
+    return "Loading vessels...";
+  }
+
+  if (selectedVessel) {
+    return selectedVessel.registrationNumber;
+  }
+
+  if (vesselsErrorMessage) {
+    return "Unable to load vessels";
+  }
+
+  return "No vessels available";
+}
+
+function FieldLabel({ text }: { text: string }) {
+  return <Text style={styles.fieldLabel}>{text}</Text>;
+}
+
+function RadioOption({ label, selected }: { label: string; selected?: boolean }) {
+  return (
+    <Pressable style={styles.radioOption}>
+      <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
+        {selected ? <View style={styles.radioInner} /> : null}
+      </View>
+      <Text style={styles.radioLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+//////////////////////////////////////////////
+// SCREEN
+//////////////////////////////////////////////
 export default function CreateSourceLedgerStepOne() {
+  const [showVesselOptions, setShowVesselOptions] = useState(false);
+  const {
+    vessels,
+    selectedVessel,
+    isLoadingVessels,
+    vesselsErrorMessage,
+    getVessels,
+    selectVessel,
+  } = useCreateSourceLedgerStepOne();
+  const vesselInfo = getVesselInfo(selectedVessel);
+  const vesselSelectText = getVesselSelectText({
+    isLoadingVessels,
+    selectedVessel,
+    vesselsErrorMessage,
+  });
+
+  const toggleVesselOptions = () => {
+    if (isLoadingVessels || vessels.length === 0) {
+      return;
+    }
+
+    setShowVesselOptions((value) => !value);
+  };
+
+  const handleSelectVessel = (vesselId: number) => {
+    selectVessel(vesselId);
+    setShowVesselOptions(false);
+  };
+
+  const handleRetryGetVessels = () => {
+    setShowVesselOptions(false);
+    void getVessels();
+  };
+
   return (
     <View style={styles.screen}>
       <ScrollView
@@ -70,10 +147,51 @@ export default function CreateSourceLedgerStepOne() {
           </View>
 
           <FieldLabel text="Tàu cá *" />
-          <Pressable style={styles.selectInput}>
-            <Text style={styles.selectText}>VN-12345</Text>
+          <Pressable
+            disabled={isLoadingVessels || vessels.length === 0}
+            onPress={toggleVesselOptions}
+            style={[
+              styles.selectInput,
+              (isLoadingVessels || vessels.length === 0) && styles.disabledInput,
+            ]}
+          >
+            <Text numberOfLines={1} style={styles.selectText}>
+              {vesselSelectText}
+            </Text>
             <ChevronDown color="#91A0B2" size={19} strokeWidth={2.3} />
           </Pressable>
+
+          {showVesselOptions ? (
+            <View style={styles.vesselOptions}>
+              {vessels.map((vessel) => (
+                <Pressable
+                  key={vessel.id}
+                  onPress={() => handleSelectVessel(vessel.id)}
+                  style={({ pressed }) => [
+                    styles.vesselOption,
+                    selectedVessel?.id === vessel.id && styles.vesselOptionSelected,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={styles.vesselOptionText}>
+                    {vessel.registrationNumber}
+                  </Text>
+                  <Text style={styles.vesselOptionSubText}>
+                    {vessel.captainName}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
+          {vesselsErrorMessage ? (
+            <View style={styles.feedbackRow}>
+              <Text style={styles.errorText}>{vesselsErrorMessage}</Text>
+              <Pressable onPress={handleRetryGetVessels} style={styles.retryButton}>
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </Pressable>
+            </View>
+          ) : null}
 
           <View style={styles.infoPanel}>
             <View style={styles.infoTitleRow}>
@@ -81,12 +199,18 @@ export default function CreateSourceLedgerStepOne() {
               <Text style={styles.infoTitle}>Thông tin tàu cá</Text>
             </View>
             <View style={styles.infoDivider} />
-            {vesselInfo.map((item) => (
-              <View key={item.label} style={styles.infoRow}>
-                <Text style={styles.infoLabel}>{item.label}</Text>
-                <Text style={styles.infoValue}>{item.value}</Text>
-              </View>
-            ))}
+            {selectedVessel ? (
+              vesselInfo.map((item) => (
+                <View key={item.label} style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>{item.label}</Text>
+                  <Text style={styles.infoValue}>{item.value}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.emptyInfoText}>
+                {isLoadingVessels ? "Loading vessel information..." : "No vessel selected"}
+              </Text>
+            )}
           </View>
 
           <View style={styles.actionRow}>
@@ -99,57 +223,11 @@ export default function CreateSourceLedgerStepOne() {
           </View>
         </View>
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <View style={styles.navRow}>
-          {navItems.slice(0, 2).map((item) => (
-            <NavItem key={item.label} {...item} />
-          ))}
-          <View style={styles.navSpacer} />
-          {navItems.slice(2).map((item) => (
-            <NavItem key={item.label} {...item} />
-          ))}
-        </View>
-
-        <Pressable accessibilityLabel="Thêm mới sổ ghi" style={styles.addButton}>
-          <Plus color={colors.navBlue} size={30} strokeWidth={2.6} />
-        </Pressable>
-      </View>
     </View>
   );
 }
 
-function FieldLabel({ text }: { text: string }) {
-  return <Text style={styles.fieldLabel}>{text}</Text>;
-}
 
-function RadioOption({ label, selected }: { label: string; selected?: boolean }) {
-  return (
-    <Pressable style={styles.radioOption}>
-      <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
-        {selected ? <View style={styles.radioInner} /> : null}
-      </View>
-      <Text style={styles.radioLabel}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function NavItem({
-  label,
-  icon: Icon,
-  active,
-}: {
-  label: string;
-  icon: IconComponent;
-  active?: boolean;
-}) {
-  return (
-    <Pressable style={styles.navItem}>
-      <Icon color={active ? "#FFFFFF" : "#C8D5EA"} size={21} strokeWidth={2.35} />
-      <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
-    </Pressable>
-  );
-}
 
 const colors = {
   brandBlueStrong: "#2E73FF",
@@ -290,9 +368,70 @@ const styles = StyleSheet.create({
     paddingHorizontal: 13,
   },
   selectText: {
+    flex: 1,
     color: colors.textPrimary,
     fontSize: 13,
     fontWeight: "700",
+    marginRight: 8,
+  },
+  disabledInput: {
+    backgroundColor: "#F6F8FB",
+  },
+  vesselOptions: {
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.white,
+    marginTop: 6,
+  },
+  vesselOption: {
+    minHeight: 44,
+    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEF3F8",
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+  },
+  vesselOptionSelected: {
+    backgroundColor: "#EAF3FF",
+  },
+  vesselOptionText: {
+    color: colors.textPrimary,
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  vesselOptionSubText: {
+    color: "#8B9AAF",
+    fontSize: 10,
+    fontWeight: "600",
+    marginTop: 2,
+  },
+  feedbackRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  errorText: {
+    flex: 1,
+    color: "#C43D3D",
+    fontSize: 11,
+    fontWeight: "700",
+    marginRight: 8,
+  },
+  retryButton: {
+    minHeight: 26,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#C43D3D",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  retryButtonText: {
+    color: "#C43D3D",
+    fontSize: 11,
+    fontWeight: "800",
   },
   infoPanel: {
     borderWidth: 1,
@@ -339,6 +478,12 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textAlign: "right",
   },
+  emptyInfoText: {
+    color: "#8B9AAF",
+    fontSize: 11,
+    fontWeight: "700",
+    lineHeight: 17,
+  },
   actionRow: {
     flexDirection: "row",
     justifyContent: "center",
@@ -374,58 +519,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 12,
     fontWeight: "800",
-  },
-  bottomNav: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    left: 0,
-    height: 58,
-    backgroundColor: colors.navBlue,
-  },
-  navRow: {
-    height: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    paddingHorizontal: 14,
-  },
-  navSpacer: {
-    width: 58,
-  },
-  navItem: {
-    width: 64,
-    height: 52,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navLabel: {
-    color: "#C8D5EA",
-    fontSize: 10,
-    fontWeight: "600",
-    marginTop: 4,
-  },
-  navLabelActive: {
-    color: colors.white,
-  },
-  addButton: {
-    position: "absolute",
-    top: -16,
-    left: "50%",
-    width: 48,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 4,
-    borderColor: colors.white,
-    borderRadius: 24,
-    backgroundColor: colors.white,
-    marginLeft: -24,
-    shadowColor: colors.navBlue,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    elevation: 9,
   },
   pressed: {
     opacity: 0.84,

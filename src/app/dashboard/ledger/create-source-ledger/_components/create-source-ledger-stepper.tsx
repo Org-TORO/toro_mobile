@@ -15,7 +15,7 @@ export default function CreateSourceLedgerStepper() {
   return (
     <View style={styles.stepper}>
       {steps.map((step, index) => {
-        const isActive = index + 1 === activeStep;
+        const isActive = step.value === activeStep;
 
         return (
           <View key={step.value} style={styles.stepWrap}>
@@ -34,13 +34,9 @@ export default function CreateSourceLedgerStepper() {
   );
 }
 
-const getActiveStep = (pathname: string) => {
-  const matchedStep = steps.findIndex(
-    (step) => step.routeKey !== "index" && pathname.includes(step.routeKey)
-  );
-
-  return matchedStep === -1 ? 1 : matchedStep + 1;
-};
+const getActiveStep = (pathname: string) =>
+  steps.find((step) => step.routeKey !== "index" && pathname.includes(step.routeKey))?.value ??
+  "1";
 
 const colors = {
   navBlue: "#0D2B57",

@@ -8,7 +8,6 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
 import {
   Bell,
   Box,
@@ -16,14 +15,9 @@ import {
   CalendarDays,
   CircleCheck,
   Clock3,
-  FileText,
-  Grid2X2,
-  History,
-  Plus,
   RefreshCcw,
   ShieldCheck,
   SquarePen,
-  UserRound,
 } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -105,15 +99,7 @@ const chartData = [
   { day: "25/09", inValue: 64, outValue: 68 },
 ];
 
-const navItems = [
-  { label: "Dashboard", icon: Grid2X2, active: true },
-  { label: "Sổ ghi", icon: FileText },
-  { label: "Lịch sử", icon: History },
-  { label: "Cá nhân", icon: UserRound },
-];
-
 export default function ManagerDashboardSection() {
-  const router = useRouter();
   const userInfo = useAuthStore((state) => state.userInfo);
   const displayName = userInfo?.fullName || "Nguyễn Văn A";
   const displayRole = formatRole(userInfo?.organizationRole ?? userInfo?.role);
@@ -206,26 +192,6 @@ export default function ManagerDashboardSection() {
             </View>
           </View>
         </ScrollView>
-
-        <View style={styles.bottomNav}>
-          <View style={styles.navRow}>
-            {navItems.slice(0, 2).map((item) => (
-              <NavItem key={item.label} {...item} />
-            ))}
-            <View style={styles.navSpacer} />
-            {navItems.slice(2).map((item) => (
-              <NavItem key={item.label} {...item} />
-            ))}
-          </View>
-
-          <Pressable
-            accessibilityLabel="Thêm mới sổ ghi"
-            onPress={() => router.push("/dashboard/ledger/create-source-ledger")}
-            style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
-          >
-            <Plus color="#0D2B57" size={30} strokeWidth={2.6} />
-          </Pressable>
-        </View>
       </SafeAreaView>
     </View>
   );
@@ -290,23 +256,6 @@ function ActivityItem({
         <Text style={styles.activityTime}>{time}</Text>
       </View>
     </View>
-  );
-}
-
-function NavItem({
-  label,
-  icon: Icon,
-  active,
-}: {
-  label: string;
-  icon: IconComponent;
-  active?: boolean;
-}) {
-  return (
-    <Pressable style={styles.navItem}>
-      <Icon color={active ? "#FFFFFF" : "#C8D5EA"} size={21} strokeWidth={2.35} />
-      <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -655,58 +604,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "600",
     marginTop: 8,
-  },
-  bottomNav: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    left: 0,
-    height: 58,
-    backgroundColor: colors.navBlue,
-  },
-  navRow: {
-    height: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    paddingHorizontal: 14,
-  },
-  navSpacer: {
-    width: 58,
-  },
-  navItem: {
-    width: 64,
-    height: 52,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navLabel: {
-    color: "#C8D5EA",
-    fontSize: 10,
-    fontWeight: "600",
-    marginTop: 4,
-  },
-  navLabelActive: {
-    color: colors.white,
-  },
-  addButton: {
-    position: "absolute",
-    top: -16,
-    left: "50%",
-    width: 48,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 4,
-    borderColor: colors.screen,
-    borderRadius: 24,
-    backgroundColor: colors.white,
-    marginLeft: -24,
-    shadowColor: "#0D2B57",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    elevation: 9,
   },
   pressed: {
     opacity: 0.84,
