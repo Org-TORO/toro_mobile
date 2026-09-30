@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 
 import { api } from "../../../infra/api/api";
@@ -6,6 +6,7 @@ import type { FailureResponse } from "../../../infra/api/failure.response.";
 import type SuccessResponse from "../../../infra/api/success.response.";
 
 const GET_VESSELS_ENDPOINT = "/refs/create-source-ledger/get-vessels";
+const GET_MAIN_STAFFS_ENDPOINT = "/refs/create-source-ledger/get-main-staffs";
 
 export const useCreateSourceLedgerStepOne = () => {
   const [vessels, setVessels] = useState<
@@ -87,6 +88,103 @@ export const useCreateSourceLedgerStepOne = () => {
     vesselsErrorMessage,
     getVessels,
     selectVessel,
+  };
+};
+
+export const useCreateSourceLedgerStepTwo = () => {
+  const requestIdRef = useRef(0);
+  const [mainStaffs, setMainStaffs] = useState<
+    {
+      id: number;
+      userId: number;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      organizationId: number;
+      organizationName: string;
+    }[]
+  >([]);
+  const [selectedMainStaffId, setSelectedMainStaffId] = useState<number | null>(null);
+  const [mainStaffSearch, setMainStaffSearch] = useState("");
+  const [isLoadingMainStaffs, setIsLoadingMainStaffs] = useState(true);
+  const [mainStaffsErrorMessage, setMainStaffsErrorMessage] = useState("");
+
+  const selectedMainStaff = useMemo(
+    () => mainStaffs.find((mainStaff) => mainStaff.id === selectedMainStaffId) ?? null,
+    [mainStaffs, selectedMainStaffId]
+  );
+
+  const getMainStaffs = useCallback(async (search = mainStaffSearch) => {
+    const requestId = requestIdRef.current + 1;
+    const normalizedSearch = search.trim();
+
+    requestIdRef.current = requestId;
+    setIsLoadingMainStaffs(true);
+    setMainStaffsErrorMessage("");
+
+    try {
+      const response = await api.get<
+        SuccessResponse<
+          {
+            id: number;
+            userId: number;
+            fullName: string;
+            email: string;
+            phoneNumber: string;
+            organizationId: number;
+            organizationName: string;
+          }[]
+        >
+      >(GET_MAIN_STAFFS_ENDPOINT, {
+        params: normalizedSearch ? { search: normalizedSearch } : undefined,
+      });
+
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      setMainStaffs(response.data.data);
+    } catch (error) {
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      if (isAxiosError<FailureResponse>(error)) {
+        setMainStaffsErrorMessage(
+          error.response?.data?.message ?? "Unable to get main staffs"
+        );
+      } else {
+        setMainStaffsErrorMessage("Unable to get main staffs");
+      }
+    } finally {
+      if (requestIdRef.current === requestId) {
+        setIsLoadingMainStaffs(false);
+      }
+    }
+  }, [mainStaffSearch]);
+
+  const selectMainStaff = (mainStaffId: number) => {
+    setSelectedMainStaffId(mainStaffId);
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      void getMainStaffs(mainStaffSearch);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [getMainStaffs, mainStaffSearch]);
+
+  return {
+    mainStaffs,
+    selectedMainStaff,
+    selectedMainStaffId,
+    mainStaffSearch,
+    isLoadingMainStaffs,
+    mainStaffsErrorMessage,
+    getMainStaffs,
+    selectMainStaff,
+    setMainStaffSearch,
   };
 };
 

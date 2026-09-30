@@ -5,7 +5,6 @@ import { Slot, useRouter } from "expo-router";
 import { ArrowLeft, Settings } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import CreateSourceLedgerStepper from "./_components/create-source-ledger-stepper";
 import { useAuthStore } from "../../../../infra/security/auth.store";
 
 export default function CreateSourceLedgerLayout() {
@@ -40,8 +39,6 @@ export default function CreateSourceLedgerLayout() {
             <Settings color="#52647B" size={22} strokeWidth={2.4} />
           </Pressable>
         </View>
-
-        <CreateSourceLedgerStepper />
 
         <View style={styles.content}>
           <Slot />

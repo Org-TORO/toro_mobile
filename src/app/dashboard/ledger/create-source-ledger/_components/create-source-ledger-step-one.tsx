@@ -76,7 +76,11 @@ function RadioOption({ label, selected }: { label: string; selected?: boolean })
 //////////////////////////////////////////////
 // SCREEN
 //////////////////////////////////////////////
-export default function CreateSourceLedgerStepOne() {
+export default function CreateSourceLedgerStepOne({
+  onContinue,
+}: {
+  onContinue: () => void;
+}) {
   const [showVesselOptions, setShowVesselOptions] = useState(false);
   const {
     vessels,
@@ -217,7 +221,10 @@ export default function CreateSourceLedgerStepOne() {
             <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
               <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
+            <Pressable
+              onPress={onContinue}
+              style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
+            >
               <Text style={styles.primaryButtonText}>Tiếp tục</Text>
             </Pressable>
           </View>

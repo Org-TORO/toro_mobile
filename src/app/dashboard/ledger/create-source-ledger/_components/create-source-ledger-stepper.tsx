@@ -1,42 +1,51 @@
 import { StyleSheet, Text, View } from "react-native";
-import { usePathname } from "expo-router";
 
 const steps = [
-  { value: "1", label: "THÔNG TIN\nSỔ GHI", routeKey: "index" },
-  { value: "2", label: "THÔNG TIN\nLÔ", routeKey: "step-two" },
-  { value: "3", label: "KIỂM TRA\nXÁC NHẬN", routeKey: "step-three" },
-  { value: "4", label: "KÝ & GHI\nBLOCKCHAIN", routeKey: "step-four" },
+  { value: "1", label: "THÔNG TIN\nSỔ GHI" },
+  { value: "2", label: "PHÂN CÔNG\nNHÂN VIÊN" },
+  { value: "3", label: "KIỂM TRA\nXÁC NHẬN" },
+  { value: "4", label: "KÝ & GHI\nBLOCKCHAIN" },
 ];
 
-export default function CreateSourceLedgerStepper() {
-  const pathname = usePathname();
-  const activeStep = getActiveStep(pathname);
-
+export default function CreateSourceLedgerStepper({
+  activeStep,
+}: {
+  activeStep: "1" | "2" | "3" | "4";
+}) {
   return (
     <View style={styles.stepper}>
       {steps.map((step, index) => {
         const isActive = step.value === activeStep;
+        const isCompletedOrActive = Number(step.value) <= Number(activeStep);
 
         return (
           <View key={step.value} style={styles.stepWrap}>
             {index > 0 ? <View style={styles.stepLineLeft} /> : null}
             {index < steps.length - 1 ? <View style={styles.stepLineRight} /> : null}
-            <View style={[styles.stepCircle, isActive && styles.stepCircleActive]}>
-              <Text style={[styles.stepValue, isActive && styles.stepValueActive]}>
+            <View
+              style={[
+                styles.stepCircle,
+                isCompletedOrActive && styles.stepCircleFilled,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.stepValue,
+                  isCompletedOrActive && styles.stepValueFilled,
+                ]}
+              >
                 {step.value}
               </Text>
             </View>
-            <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>{step.label}</Text>
+            <Text style={[styles.stepLabel, isActive && styles.stepLabelActive]}>
+              {step.label}
+            </Text>
           </View>
         );
       })}
     </View>
   );
 }
-
-const getActiveStep = (pathname: string) =>
-  steps.find((step) => step.routeKey !== "index" && pathname.includes(step.routeKey))?.value ??
-  "1";
 
 const colors = {
   navBlue: "#0D2B57",
@@ -81,7 +90,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: colors.white,
   },
-  stepCircleActive: {
+  stepCircleFilled: {
     borderColor: colors.navBlue,
     backgroundColor: colors.navBlue,
   },
@@ -90,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  stepValueActive: {
+  stepValueFilled: {
     color: colors.white,
   },
   stepLabel: {
