@@ -11,9 +11,9 @@ type IconComponent = ComponentType<{
 
 const navItems = [
   { label: "Dashboard", icon: Grid2X2, route: "/dashboard" },
-  { label: "Sá»• ghi", icon: FileText, route: "/dashboard/ledger" },
-  { label: "Lá»‹ch sá»­", icon: History },
-  { label: "CÃ¡ nhÃ¢n", icon: UserRound },
+  { label: "Sổ ghi", icon: FileText, route: "/dashboard/ledger" },
+  { label: "Lịch sử", icon: History },
+  { label: "Cá nhân", icon: UserRound },
 ];
 
 export default function DashboardLayout() {
