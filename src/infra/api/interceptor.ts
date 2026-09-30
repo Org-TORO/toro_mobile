@@ -2,9 +2,14 @@ import {
   AxiosError,
   type InternalAxiosRequestConfig,
 } from "axios";
+import * as SecureStore from "expo-secure-store";
 
 import { api, refreshApi } from "./api";
-import { useAuthStore } from "../security/auth.store";
+import type SuccessResponse from "./success.response.";
+import {
+  REFRESH_TOKEN_STORAGE_KEY,
+  useAuthStore,
+} from "../security/auth.store";
 import {
   getRefreshPromise,
   setRefreshPromise,
@@ -78,18 +83,26 @@ export const setupInterceptors = (): void => {
          * start one.
          */
         if (!refreshPromise) {
-          refreshPromise = refreshApi
-            .post<RefreshTokenResponse>(
-              "/auth/refresh-token"
-            )
-            .then((response) => {
-              const newAccessToken = response.data.accessToken;
-              const { setAccessToken, setIsAuthenticated } = useAuthStore.getState();
-              
-              setAccessToken(newAccessToken);
-              setIsAuthenticated(true);
+          refreshPromise = SecureStore
+            .getItemAsync(REFRESH_TOKEN_STORAGE_KEY)
+            .then((storedRefreshToken) => {
+              if (!storedRefreshToken) {
+                throw new Error("Refresh token is missing");
+              }
 
-              return newAccessToken;
+              return refreshApi.post<SuccessResponse<RefreshTokenResponse>>(
+                "/auth/refresh-token",
+                { refreshToken: storedRefreshToken }
+              );
+            })
+            .then(async (response) => {
+              const { accessToken, refreshToken, user } = response.data.data;
+              const { setAuthSession } = useAuthStore.getState();
+              
+              await SecureStore.setItemAsync(REFRESH_TOKEN_STORAGE_KEY, refreshToken);
+              setAuthSession(accessToken, user);
+
+              return accessToken;
             })
             .finally(() => {
               setRefreshPromise(null);
@@ -116,6 +129,7 @@ export const setupInterceptors = (): void => {
 
         const { clearAuthState } = useAuthStore.getState();
 
+        await SecureStore.deleteItemAsync(REFRESH_TOKEN_STORAGE_KEY);
         clearAuthState();
 
         // Optional:

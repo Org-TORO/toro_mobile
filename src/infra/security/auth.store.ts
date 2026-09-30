@@ -14,6 +14,7 @@ export type AuthenticatedUser = {
   email: string;
   phoneNumber: string;
   role: string;
+  memberId: number | null;
   organizationRole: string | null;
   organizationId: number | null;
 };
