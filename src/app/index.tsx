@@ -18,12 +18,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import LoginSuccessSection from "./_components/login-success-section";
 import { useLogin } from "../feature/authentication/login/login.hook";
+import { useAuthStore } from "../infra/security/auth.store";
 
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
 
 export default function LoginScreen() {
   const router = useRouter();
+  const bootstrapToken = useAuthStore((state) => state.bootstrapToken);
+  const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
   const {
     email,
     password,
@@ -39,6 +42,24 @@ export default function LoginScreen() {
     togglePasswordVisibility,
     submitLogin,
   } = useLogin();
+
+  useEffect(() => {
+    let isActive = true;
+
+    bootstrapToken()
+      .then((result) => {
+        if (isActive && result === "authenticated") {
+          router.replace("/dashboard");
+        }
+      })
+      .catch(() => {
+        // Stay on the login screen if bootstrap cannot complete.
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [bootstrapToken, router]);
 
   useEffect(() => {
     if (!loginSucceeded) {
@@ -60,7 +81,12 @@ export default function LoginScreen() {
           behavior={Platform.select({ ios: "padding", android: undefined })}
           style={styles.keyboardView}
         >
-          {loginSucceeded ? (
+          {isBootstrapping ? (
+            <View style={[styles.card, styles.bootstrapCard]}>
+              <Image source={logoImage} resizeMode="contain" style={styles.brandLogo} />
+              <ActivityIndicator color={colors.blue} size="large" />
+            </View>
+          ) : loginSucceeded ? (
             <LoginSuccessSection />
           ) : (
             <View style={styles.card}>
@@ -213,6 +239,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 28,
     elevation: 14,
+  },
+  bootstrapCard: {
+    justifyContent: "center",
+    gap: 24,
   },
   brand: {
     alignItems: "center",

@@ -5,14 +5,15 @@ import * as SecureStore from "expo-secure-store";
 import { refreshApi } from "../../../infra/api/api";
 import { ERROR_CODES, type FailureResponse } from "../../../infra/api/failure.response.";
 import type SuccessResponse from "../../../infra/api/success.response.";
-import { useAuthStore } from "../../../infra/security/auth.store";
+import {
+  REFRESH_TOKEN_STORAGE_KEY,
+  useAuthStore,
+} from "../../../infra/security/auth.store";
 import type {
   LoginFieldErrors,
   LoginForm,
   LoginResponseData,
 } from "./login.type";
-
-const REFRESH_TOKEN_STORAGE_KEY = "auth.refreshToken";
 
 const initialForm: LoginForm = {
   email: "",
