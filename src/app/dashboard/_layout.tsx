@@ -11,7 +11,12 @@ type IconComponent = ComponentType<{
 
 const navItems = [
   { label: "Dashboard", icon: Grid2X2, route: "/dashboard" },
-  { label: "Sổ ghi", icon: FileText, route: "/dashboard/ledger/create-source-ledger" },
+  {
+    label: "Sổ ghi",
+    icon: FileText,
+    route: "/dashboard/ledger/get-source-ledgers",
+    activePrefix: "/dashboard/ledger",
+  },
   { label: "Lịch sử", icon: History },
   { label: "Cá nhân", icon: UserRound },
 ];
@@ -20,13 +25,17 @@ export default function DashboardLayout() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isNavItemActive = (route?: string) => {
+  const isNavItemActive = (route?: string, activePrefix?: string) => {
     if (!route) {
       return false;
     }
 
     if (route === "/dashboard") {
       return pathname === route;
+    }
+
+    if (activePrefix) {
+      return pathname.startsWith(activePrefix);
     }
 
     return pathname.startsWith(route);
@@ -39,7 +48,11 @@ export default function DashboardLayout() {
       <View style={styles.bottomNav}>
         <View style={styles.navRow}>
           {navItems.map((item) => (
-            <NavItem key={item.label} active={isNavItemActive(item.route)} {...item} />
+            <NavItem
+              key={item.label}
+              active={isNavItemActive(item.route, item.activePrefix)}
+              {...item}
+            />
           ))}
         </View>
 
@@ -64,6 +77,7 @@ function NavItem({
   label: string;
   icon: IconComponent;
   route?: string;
+  activePrefix?: string;
   active?: boolean;
 }) {
   const router = useRouter();
