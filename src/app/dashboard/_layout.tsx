@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Slot, usePathname } from "expo-router";
-import { Grid2X2, History, UserRound } from "lucide-react-native";
+import { Slot, usePathname, useRouter } from "expo-router";
+import { FileText, Grid2X2, History, Plus, UserRound } from "lucide-react-native";
 
 type IconComponent = ComponentType<{
   color?: string;
@@ -11,12 +11,14 @@ type IconComponent = ComponentType<{
 
 const navItems = [
   { label: "Dashboard", icon: Grid2X2, route: "/dashboard" },
+  { label: "Sổ ghi", icon: FileText, route: "/dashboard/ledger/create-source-ledger" },
   { label: "Lịch sử", icon: History },
   { label: "Cá nhân", icon: UserRound },
 ];
 
 export default function DashboardLayout() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const isNavItemActive = (route?: string) => {
     if (!route) {
@@ -40,6 +42,14 @@ export default function DashboardLayout() {
             <NavItem key={item.label} active={isNavItemActive(item.route)} {...item} />
           ))}
         </View>
+
+        <Pressable
+          accessibilityLabel="Tạo sổ ghi"
+          onPress={() => router.push("/dashboard/ledger/create-source-ledger")}
+          style={({ pressed }) => [styles.createButton, pressed && styles.pressed]}
+        >
+          <Plus color={colors.navBlue} size={30} strokeWidth={2.8} />
+        </Pressable>
       </View>
     </View>
   );
@@ -48,6 +58,7 @@ export default function DashboardLayout() {
 function NavItem({
   label,
   icon: Icon,
+  route,
   active,
 }: {
   label: string;
@@ -55,8 +66,17 @@ function NavItem({
   route?: string;
   active?: boolean;
 }) {
+  const router = useRouter();
+
   return (
-    <Pressable style={styles.navItem}>
+    <Pressable
+      onPress={() => {
+        if (route) {
+          router.push(route);
+        }
+      }}
+      style={styles.navItem}
+    >
       <Icon color={active ? "#FFFFFF" : "#C8D5EA"} size={21} strokeWidth={2.35} />
       <Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text>
     </Pressable>
@@ -85,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
   },
   navItem: {
     width: 64,
@@ -101,5 +121,28 @@ const styles = StyleSheet.create({
   },
   navLabelActive: {
     color: colors.white,
+  },
+  createButton: {
+    position: "absolute",
+    top: -20,
+    left: "50%",
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 4,
+    borderColor: colors.navBlue,
+    borderRadius: 24,
+    backgroundColor: colors.white,
+    marginLeft: -24,
+    shadowColor: "#0A244B",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.22,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  pressed: {
+    opacity: 0.84,
+    transform: [{ scale: 0.98 }],
   },
 });
