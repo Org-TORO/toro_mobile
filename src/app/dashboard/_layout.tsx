@@ -10,12 +10,12 @@ type IconComponent = ComponentType<{
 }>;
 
 const navItems = [
-  { label: "Dashboard", icon: Grid2X2, route: "/dashboard" },
+  { label: "Dashboard", icon: Grid2X2, route: "/dashboard/manager" },
   {
     label: "Sổ ghi",
     icon: FileText,
-    route: "/dashboard/ledger/get-source-ledgers",
-    activePrefix: "/dashboard/ledger",
+    route: "/dashboard/manager/ledger/get-source-ledgers",
+    activePrefix: "/dashboard/manager/ledger",
   },
   { label: "Lịch sử", icon: History },
   { label: "Cá nhân", icon: UserRound },
@@ -30,7 +30,7 @@ export default function DashboardLayout() {
       return false;
     }
 
-    if (route === "/dashboard") {
+    if (route === "/dashboard/manager") {
       return pathname === route;
     }
 
@@ -58,7 +58,7 @@ export default function DashboardLayout() {
 
         <Pressable
           accessibilityLabel="Tạo sổ ghi"
-          onPress={() => router.push("/dashboard/ledger/create-source-ledger")}
+          onPress={() => router.push("/dashboard/manager/ledger/create-source-ledger")}
           style={({ pressed }) => [styles.createButton, pressed && styles.pressed]}
         >
           <Plus color={colors.navBlue} size={30} strokeWidth={2.8} />

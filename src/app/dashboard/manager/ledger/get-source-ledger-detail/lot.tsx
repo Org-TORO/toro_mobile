@@ -57,7 +57,9 @@ export default function SourceLedgerLotStepScreen() {
           <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
         </Pressable>
         <Pressable
-          onPress={() => router.push(`/dashboard/ledger/get-source-ledger-detail/review${suffix}`)}
+          onPress={() =>
+            router.push(`/dashboard/manager/ledger/get-source-ledger-detail/review${suffix}`)
+          }
           style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
         >
           <Text style={styles.primaryButtonText}>Tiếp tục</Text>

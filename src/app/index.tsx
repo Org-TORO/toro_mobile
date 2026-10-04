@@ -49,7 +49,7 @@ export default function LoginScreen() {
     bootstrapToken()
       .then((result) => {
         if (isActive && result === "authenticated") {
-          router.replace("/dashboard");
+          router.replace("/dashboard/manager");
         }
       })
       .catch(() => {
@@ -67,7 +67,7 @@ export default function LoginScreen() {
     }
 
     const redirectTimer = setTimeout(() => {
-      router.replace("/dashboard");
+      router.replace("/dashboard/manager");
     }, 650);
 
     return () => clearTimeout(redirectTimer);

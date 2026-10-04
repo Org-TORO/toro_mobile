@@ -44,7 +44,9 @@ export default function SourceLedgerBlockchainStepScreen() {
       <InfoLine label="Bước hiện tại" value="Phân công nhân sự" />
 
       <Pressable
-        onPress={() => router.push(`/dashboard/ledger/get-source-ledger-detail/success${suffix}`)}
+        onPress={() =>
+          router.push(`/dashboard/manager/ledger/get-source-ledger-detail/success${suffix}`)
+        }
         style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
       >
         <Text style={styles.primaryButtonText}>Ghi blockchain</Text>

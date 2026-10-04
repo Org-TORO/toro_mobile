@@ -5,28 +5,28 @@ import { Slot, useLocalSearchParams, usePathname, useRouter } from "expo-router"
 import { ArrowLeft, Check, Settings } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAuthStore } from "../../../../infra/security/auth.store";
+import { useAuthStore } from "../../../../../infra/security/auth.store";
 
 const steps = [
   {
     key: "source",
     label: "THÔNG TIN\nNGUỒN CÁ",
-    route: "/dashboard/ledger/get-source-ledger-detail",
+    route: "/dashboard/manager/ledger/get-source-ledger-detail",
   },
   {
     key: "lot",
     label: "THÔNG TIN\nLÔ",
-    route: "/dashboard/ledger/get-source-ledger-detail/lot",
+    route: "/dashboard/manager/ledger/get-source-ledger-detail/lot",
   },
   {
     key: "review",
     label: "KIỂM TRA\nXÁC NHẬN",
-    route: "/dashboard/ledger/get-source-ledger-detail/review",
+    route: "/dashboard/manager/ledger/get-source-ledger-detail/review",
   },
   {
     key: "blockchain",
     label: "KÝ & GHI\nBLOCKCHAIN",
-    route: "/dashboard/ledger/get-source-ledger-detail/blockchain",
+    route: "/dashboard/manager/ledger/get-source-ledger-detail/blockchain",
   },
 ] as const;
 

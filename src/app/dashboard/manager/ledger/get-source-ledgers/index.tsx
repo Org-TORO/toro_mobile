@@ -5,9 +5,9 @@ import { useRouter } from "expo-router";
 import { Archive, ArrowLeft, Settings } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAuthStore } from "../../../../infra/security/auth.store";
+import { useAuthStore } from "../../../../../infra/security/auth.store";
 
-const logoImage = require("../../../../../assets/TORO_LOGO.png");
+const logoImage = require("../../../../../../assets/TORO_LOGO.png");
 
 const sourceLedgers = [
   {
@@ -96,7 +96,7 @@ function SourceLedgerCard({ sourceId, createdAt }: { sourceId: string; createdAt
     <Pressable
       onPress={() =>
         router.push(
-          `/dashboard/ledger/get-source-ledger-detail?id=${encodeURIComponent(sourceId)}`,
+          `/dashboard/manager/ledger/get-source-ledger-detail?id=${encodeURIComponent(sourceId)}`,
         )
       }
       style={({ pressed }) => [styles.ledgerCard, pressed && styles.pressed]}

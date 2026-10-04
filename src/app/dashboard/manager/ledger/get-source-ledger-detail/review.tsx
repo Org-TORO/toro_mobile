@@ -44,7 +44,9 @@ export default function SourceLedgerReviewStepScreen() {
       <InfoLine label="Bước hiện tại" value="Phân công nhân sự" />
 
       <Pressable
-        onPress={() => router.push(`/dashboard/ledger/get-source-ledger-detail/blockchain${suffix}`)}
+        onPress={() =>
+          router.push(`/dashboard/manager/ledger/get-source-ledger-detail/blockchain${suffix}`)
+        }
         style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
       >
         <Text style={styles.primaryButtonText}>Tiếp tục</Text>

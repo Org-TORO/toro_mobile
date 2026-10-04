@@ -36,7 +36,7 @@ export default function SourceLedgerSuccessScreen() {
       </View>
 
       <Pressable
-        onPress={() => router.push("/dashboard/ledger/get-source-ledgers")}
+        onPress={() => router.push("/dashboard/manager/ledger/get-source-ledgers")}
         style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
       >
         <Text style={styles.primaryButtonText}>Tiếp tục</Text>
@@ -44,7 +44,9 @@ export default function SourceLedgerSuccessScreen() {
       </Pressable>
 
       <Pressable
-        onPress={() => router.push(`/dashboard/ledger/get-source-ledger-detail/blockchain${suffix}`)}
+        onPress={() =>
+          router.push(`/dashboard/manager/ledger/get-source-ledger-detail/blockchain${suffix}`)
+        }
         style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}
       >
         <Text style={styles.secondaryButtonText}>Xem chi tiết</Text>
