@@ -44,6 +44,8 @@ type AuthState = {
 let bootstrapPromise: Promise<BootstrapTokenResult> | null = null;
 
 const isCodedClientError = (error: unknown): boolean => {
+  console.log(error);
+  
   if (!isAxiosError<FailureResponse>(error)) {
     return false;
   }

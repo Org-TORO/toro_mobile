@@ -1,19 +1,7 @@
 import type { ComponentType } from "react";
-import { useEffect } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
-import {
-  Anchor,
-  ArrowLeft,
-  Building2,
-  ChevronDown,
-  ChevronRight,
-  Settings,
-} from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { useAuthStore } from "../../../../infra/security/auth.store";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Anchor, Building2, ChevronDown, ChevronRight } from "lucide-react-native";
 
 type IconComponent = ComponentType<{
   color?: string;
@@ -29,106 +17,73 @@ const vesselDetails = [
   { label: "IMO Number", value: "IMO-7654321" },
 ];
 
-export default function CreateSourceLedgerScreen() {
+export default function SourceLedgerSourceStepScreen() {
   const router = useRouter();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/");
-    }
-  }, [isAuthenticated, router]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const sourceId = Array.isArray(id) ? id[0] : id;
+  const suffix = sourceId ? `?id=${encodeURIComponent(sourceId)}` : "";
 
   return (
-    <View style={styles.screen}>
-      <StatusBar style="dark" />
-      <SafeAreaView edges={["top"]} style={styles.safeArea}>
-        <View style={styles.header}>
-          <Pressable
-            accessibilityLabel="Quay lại"
-            hitSlop={12}
-            onPress={() => router.back()}
-            style={styles.headerIconButton}
-          >
-            <ArrowLeft color={colors.textPrimary} size={26} strokeWidth={2.4} />
-          </Pressable>
+    <ScrollView
+      bounces={false}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.sectionIntro}>
+        <Text style={styles.sectionTitle}>THÔNG TIN NGUỒN CÁ</Text>
+        <Text style={styles.sectionSubtitle}>
+          Ghi nhận nguồn nguyên liệu và tạo lô cá nguyên liệu ban đầu
+        </Text>
+      </View>
 
-          <Text numberOfLines={1} style={styles.headerTitle}>
-            Tạo mới sổ ghi
-          </Text>
+      <View style={styles.formBlock}>
+        <Text style={styles.groupTitle}>
+          A. Thông tin nguồn cá <Text style={styles.required}>*</Text>
+        </Text>
 
-          <Pressable accessibilityLabel="Cài đặt" hitSlop={12} style={styles.headerIconButton}>
-            <Settings color="#61718A" size={22} strokeWidth={2.4} />
-          </Pressable>
+        <FieldLabel required label="Nhà cung cấp (Supplier)" />
+        <SelectCard icon={Building2} meta="SUP-001" title="Công ty TNHH Hải Sản Biển Đông" />
+
+        <FieldLabel required label="Loại nguồn" />
+        <View style={styles.radioRow}>
+          <RadioOption active label="Tàu cá" />
+          <RadioOption label="Trang trại" />
         </View>
 
-        <ScrollView
-          bounces={false}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.sectionIntro}>
-            <Text style={styles.sectionTitle}>THÔNG TIN NGUỒN CÁ</Text>
-            <Text style={styles.sectionSubtitle}>
-              Ghi nhận nguồn nguyên liệu và tạo lô cá nguyên liệu ban đầu
-            </Text>
+        <FieldLabel required label="Tàu cá" />
+        <Pressable style={({ pressed }) => [styles.selectInput, pressed && styles.pressed]}>
+          <Text style={styles.selectInputText}>VN-12345</Text>
+          <ChevronDown color="#8A9AB0" size={19} strokeWidth={2.2} />
+        </Pressable>
+
+        <View style={styles.infoPanel}>
+          <View style={styles.infoHeader}>
+            <Anchor color={colors.brandBlue} size={16} strokeWidth={2.6} />
+            <Text style={styles.infoTitle}>Thông tin tàu cá</Text>
           </View>
-
-          <View style={styles.formBlock}>
-            <Text style={styles.groupTitle}>
-              A. Thông tin nguồn cá <Text style={styles.required}>*</Text>
-            </Text>
-
-            <FieldLabel required label="Nhà cung cấp (Supplier)" />
-            <SelectCard
-              icon={Building2}
-              meta="SUP-001"
-              title="Công ty TNHH Hải Sản Biển Đông"
-            />
-
-            <FieldLabel required label="Loại nguồn" />
-            <View style={styles.radioRow}>
-              <RadioOption active label="Tàu cá" />
-              <RadioOption label="Trang trại" />
+          <View style={styles.infoDivider} />
+          {vesselDetails.map((detail) => (
+            <View key={detail.label} style={styles.infoRow}>
+              <Text style={styles.infoLabel}>{detail.label}</Text>
+              <Text style={styles.infoValue}>{detail.value}</Text>
             </View>
+          ))}
+        </View>
 
-            <FieldLabel required label="Tàu cá" />
-            <Pressable style={({ pressed }) => [styles.selectInput, pressed && styles.pressed]}>
-              <Text style={styles.selectInputText}>VN-12345</Text>
-              <ChevronDown color="#8A9AB0" size={19} strokeWidth={2.2} />
-            </Pressable>
-
-            <View style={styles.infoPanel}>
-              <View style={styles.infoHeader}>
-                <Anchor color={colors.brandBlue} size={16} strokeWidth={2.6} />
-                <Text style={styles.infoTitle}>Thông tin tàu cá</Text>
-              </View>
-              <View style={styles.infoDivider} />
-              {vesselDetails.map((detail) => (
-                <View key={detail.label} style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>{detail.label}</Text>
-                  <Text style={styles.infoValue}>{detail.value}</Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.actionRow}>
-              <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
-                <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
-              </Pressable>
-              <Pressable style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
-                <Text style={styles.primaryButtonText}>Tạo mới</Text>
-              </Pressable>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </View>
+        <View style={styles.actionRow}>
+          <Pressable style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
+            <Text style={styles.secondaryButtonText}>Lưu nháp</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push(`/dashboard/ledger/get-source-ledger-detail/lot${suffix}`)}
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
+          >
+            <Text style={styles.primaryButtonText}>Tiếp tục</Text>
+          </Pressable>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -179,11 +134,8 @@ function RadioOption({ active, label }: { active?: boolean; label: string }) {
 const colors = {
   brandBlue: "#155BDE",
   border: "#D7E3F0",
-  borderLight: "#E8EFF7",
-  fieldText: "#31425A",
   navBlue: "#0D2B57",
   panelBlue: "#F1F7FF",
-  screen: "#FFFFFF",
   textMuted: "#8291A6",
   textPrimary: "#172B4D",
   white: "#FFFFFF",
@@ -198,42 +150,13 @@ const softShadow = {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.screen,
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  header: {
-    height: 58,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEF2F6",
-    paddingHorizontal: 18,
-  },
-  headerIconButton: {
-    width: 38,
-    height: 38,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    flex: 1,
-    color: colors.textPrimary,
-    fontSize: 20,
-    fontWeight: "800",
-    marginHorizontal: 8,
-  },
   content: {
-    paddingBottom: 112,
+    paddingBottom: 124,
     paddingHorizontal: 26,
-    paddingTop: 26,
+    paddingTop: 22,
   },
   sectionIntro: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionTitle: {
     color: colors.textPrimary,
