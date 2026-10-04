@@ -90,8 +90,17 @@ export default function GetSourceLedgersScreen() {
 }
 
 function SourceLedgerCard({ sourceId, createdAt }: { sourceId: string; createdAt: string }) {
+  const router = useRouter();
+
   return (
-    <Pressable style={({ pressed }) => [styles.ledgerCard, pressed && styles.pressed]}>
+    <Pressable
+      onPress={() =>
+        router.push(
+          `/dashboard/ledger/get-source-ledger-detail?id=${encodeURIComponent(sourceId)}`,
+        )
+      }
+      style={({ pressed }) => [styles.ledgerCard, pressed && styles.pressed]}
+    >
       <View style={styles.archiveBadge}>
         <Archive color={colors.navBlue} size={21} strokeWidth={2.6} />
       </View>
