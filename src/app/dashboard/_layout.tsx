@@ -18,6 +18,12 @@ export default function DashboardLayout() {
     ? "/dashboard/main-staff"
     : "/dashboard/manager";
   const navItems = getNavItems(dashboardRoute);
+  const createRoute =
+    dashboardRoute === "/dashboard/main-staff"
+      ? "/dashboard/main-staff/ledger/get-source-ledgers"
+      : "/dashboard/manager/ledger/create-source-ledger";
+  const createAccessibilityLabel =
+    dashboardRoute === "/dashboard/main-staff" ? "Mở sổ ghi được phân công" : "Tạo sổ ghi";
 
   const isNavItemActive = (route?: string, activePrefix?: string) => {
     if (!route) {
@@ -51,8 +57,8 @@ export default function DashboardLayout() {
         </View>
 
         <Pressable
-          accessibilityLabel="T\u1ea1o s\u1ed5 ghi"
-          onPress={() => router.push("/dashboard/manager/ledger/create-source-ledger")}
+          accessibilityLabel={createAccessibilityLabel}
+          onPress={() => router.push(createRoute)}
           style={({ pressed }) => [styles.createButton, pressed && styles.pressed]}
         >
           <Plus color={colors.navBlue} size={30} strokeWidth={2.8} />
@@ -62,17 +68,28 @@ export default function DashboardLayout() {
   );
 }
 
-const getNavItems = (dashboardRoute: DashboardRoute) => [
-  { label: "Dashboard", icon: Grid2X2, route: dashboardRoute },
-  {
-    label: "S\u1ed5 ghi",
-    icon: FileText,
-    route: "/dashboard/manager/ledger/get-source-ledgers",
-    activePrefix: "/dashboard/manager/ledger",
-  },
-  { label: "L\u1ecbch s\u1eed", icon: History },
-  { label: "C\u00e1 nh\u00e2n", icon: UserRound },
-];
+const getNavItems = (dashboardRoute: DashboardRoute) => {
+  const ledgerRoute =
+    dashboardRoute === "/dashboard/main-staff"
+      ? "/dashboard/main-staff/ledger/get-source-ledgers"
+      : "/dashboard/manager/ledger/get-source-ledgers";
+  const ledgerPrefix =
+    dashboardRoute === "/dashboard/main-staff"
+      ? "/dashboard/main-staff/ledger"
+      : "/dashboard/manager/ledger";
+
+  return [
+    { label: "Dashboard", icon: Grid2X2, route: dashboardRoute },
+    {
+      label: "S\u1ed5 ghi",
+      icon: FileText,
+      route: ledgerRoute,
+      activePrefix: ledgerPrefix,
+    },
+    { label: "L\u1ecbch s\u1eed", icon: History },
+    { label: "C\u00e1 nh\u00e2n", icon: UserRound },
+  ];
+};
 
 function NavItem({
   label,
