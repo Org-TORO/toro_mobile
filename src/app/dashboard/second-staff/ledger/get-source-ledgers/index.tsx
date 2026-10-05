@@ -56,7 +56,7 @@ export default function SecondStaffGetSourceLedgersScreen() {
       <SafeAreaView edges={["top"]} style={styles.safeArea}>
         <View style={styles.header}>
           <Pressable
-            accessibilityLabel="Quay lai"
+            accessibilityLabel="Quay lại"
             hitSlop={12}
             onPress={() => router.back()}
             style={styles.headerIconButton}
@@ -67,10 +67,10 @@ export default function SecondStaffGetSourceLedgersScreen() {
           <Image source={logoImage} resizeMode="contain" style={styles.logo} />
 
           <Text numberOfLines={1} style={styles.headerTitle}>
-            {"Danh s\u00e1ch s\u1ed5 ghi"}
+            {"Danh sách sổ ghi"}
           </Text>
 
-          <Pressable accessibilityLabel="Cai dat" hitSlop={12} style={styles.headerIconButton}>
+          <Pressable accessibilityLabel="Cài đặt" hitSlop={12} style={styles.headerIconButton}>
             <Settings color={colors.navBlue} size={23} strokeWidth={2.5} />
           </Pressable>
         </View>
@@ -96,7 +96,7 @@ function SourceLedgerCard({ sourceId, createdAt }: { sourceId: string; createdAt
     <Pressable
       onPress={() =>
         router.push(
-          `/dashboard/manager/ledger/get-source-ledger-detail?id=${encodeURIComponent(sourceId)}`,
+          `/dashboard/second-staff/ledger/get-source-ledger-detail?id=${encodeURIComponent(sourceId)}`,
         )
       }
       style={({ pressed }) => [styles.ledgerCard, pressed && styles.pressed]}

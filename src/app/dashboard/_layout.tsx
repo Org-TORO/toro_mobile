@@ -28,8 +28,8 @@ export default function DashboardLayout() {
       : `${dashboardRoute}/ledger/get-source-ledgers`;
   const createAccessibilityLabel =
     dashboardRoute === "/dashboard/manager"
-      ? "T\u1ea1o s\u1ed5 ghi"
-      : "M\u1edf danh s\u00e1ch s\u1ed5 ghi";
+      ? "Tạo sổ ghi"
+      : "Mở danh sách sổ ghi";
 
   const isNavItemActive = (route?: string, activePrefix?: string) => {
     if (!route) {
@@ -97,13 +97,13 @@ const getNavItems = (dashboardRoute: DashboardRoute) => {
   return [
     { label: "Dashboard", icon: Grid2X2, route: dashboardRoute },
     {
-      label: "S\u1ed5 ghi",
+      label: "Sổ ghi",
       icon: FileText,
       route: ledgerRoute,
       activePrefix: ledgerPrefix,
     },
-    { label: "L\u1ecbch s\u1eed", icon: History },
-    { label: "C\u00e1 nh\u00e2n", icon: UserRound },
+    { label: "Lịch sử", icon: History },
+    { label: "Cá nhân", icon: UserRound },
   ];
 };
 
