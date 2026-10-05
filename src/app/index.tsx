@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LoginSuccessSection from "./_components/login-success-section";
 import { useLogin } from "../feature/authentication/login/login.hook";
 import { useAuthStore } from "../infra/security/auth.store";
+import { getDashboardRouteForUser } from "../infra/security/dashboard-route.helper";
 
 const backgroundImage = require("../../assets/LOGIN_SCREEN_BACKGROUND.png");
 const logoImage = require("../../assets/TORO_LOGO.png");
@@ -27,6 +28,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const bootstrapToken = useAuthStore((state) => state.bootstrapToken);
   const isBootstrapping = useAuthStore((state) => state.isBootstrapping);
+  const userInfo = useAuthStore((state) => state.userInfo);
   const {
     email,
     password,
@@ -49,7 +51,7 @@ export default function LoginScreen() {
     bootstrapToken()
       .then((result) => {
         if (isActive && result === "authenticated") {
-          router.replace("/dashboard/manager");
+          router.replace(getDashboardRouteForUser(useAuthStore.getState().userInfo));
         }
       })
       .catch(() => {
@@ -66,12 +68,16 @@ export default function LoginScreen() {
       return;
     }
 
+    if (!userInfo) {
+      return;
+    }
+
     const redirectTimer = setTimeout(() => {
-      router.replace("/dashboard/manager");
+      router.replace(getDashboardRouteForUser(userInfo));
     }, 650);
 
     return () => clearTimeout(redirectTimer);
-  }, [loginSucceeded, router]);
+  }, [loginSucceeded, router, userInfo]);
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.background}>

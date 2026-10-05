@@ -9,28 +9,22 @@ type IconComponent = ComponentType<{
   strokeWidth?: number;
 }>;
 
-const navItems = [
-  { label: "Dashboard", icon: Grid2X2, route: "/dashboard/manager" },
-  {
-    label: "Sổ ghi",
-    icon: FileText,
-    route: "/dashboard/manager/ledger/get-source-ledgers",
-    activePrefix: "/dashboard/manager/ledger",
-  },
-  { label: "Lịch sử", icon: History },
-  { label: "Cá nhân", icon: UserRound },
-];
+type DashboardRoute = "/dashboard/manager" | "/dashboard/main-staff";
 
 export default function DashboardLayout() {
   const pathname = usePathname();
   const router = useRouter();
+  const dashboardRoute: DashboardRoute = pathname.startsWith("/dashboard/main-staff")
+    ? "/dashboard/main-staff"
+    : "/dashboard/manager";
+  const navItems = getNavItems(dashboardRoute);
 
   const isNavItemActive = (route?: string, activePrefix?: string) => {
     if (!route) {
       return false;
     }
 
-    if (route === "/dashboard/manager") {
+    if (route === "/dashboard/manager" || route === "/dashboard/main-staff") {
       return pathname === route;
     }
 
@@ -57,7 +51,7 @@ export default function DashboardLayout() {
         </View>
 
         <Pressable
-          accessibilityLabel="Tạo sổ ghi"
+          accessibilityLabel="T\u1ea1o s\u1ed5 ghi"
           onPress={() => router.push("/dashboard/manager/ledger/create-source-ledger")}
           style={({ pressed }) => [styles.createButton, pressed && styles.pressed]}
         >
@@ -67,6 +61,18 @@ export default function DashboardLayout() {
     </View>
   );
 }
+
+const getNavItems = (dashboardRoute: DashboardRoute) => [
+  { label: "Dashboard", icon: Grid2X2, route: dashboardRoute },
+  {
+    label: "S\u1ed5 ghi",
+    icon: FileText,
+    route: "/dashboard/manager/ledger/get-source-ledgers",
+    activePrefix: "/dashboard/manager/ledger",
+  },
+  { label: "L\u1ecbch s\u1eed", icon: History },
+  { label: "C\u00e1 nh\u00e2n", icon: UserRound },
+];
 
 function NavItem({
   label,
