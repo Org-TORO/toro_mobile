@@ -8,5 +8,9 @@ export const getDashboardRouteForUser = (userInfo?: AuthenticatedUser | null) =>
     return "/dashboard/main-staff" as const;
   }
 
+  if (role === "SECOND_STAFF" || organizationRole === "SECOND_STAFF") {
+    return "/dashboard/second-staff" as const;
+  }
+
   return "/dashboard/manager" as const;
 };

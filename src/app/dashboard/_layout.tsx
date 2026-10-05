@@ -9,28 +9,34 @@ type IconComponent = ComponentType<{
   strokeWidth?: number;
 }>;
 
-type DashboardRoute = "/dashboard/manager" | "/dashboard/main-staff";
+type DashboardRoute = "/dashboard/manager" | "/dashboard/main-staff" | "/dashboard/second-staff";
+
+const dashboardRoutes: DashboardRoute[] = [
+  "/dashboard/manager",
+  "/dashboard/main-staff",
+  "/dashboard/second-staff",
+];
 
 export default function DashboardLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const dashboardRoute: DashboardRoute = pathname.startsWith("/dashboard/main-staff")
-    ? "/dashboard/main-staff"
-    : "/dashboard/manager";
+  const dashboardRoute = getDashboardRouteFromPathname(pathname);
   const navItems = getNavItems(dashboardRoute);
   const createRoute =
-    dashboardRoute === "/dashboard/main-staff"
-      ? "/dashboard/main-staff/ledger/get-source-ledgers"
-      : "/dashboard/manager/ledger/create-source-ledger";
+    dashboardRoute === "/dashboard/manager"
+      ? "/dashboard/manager/ledger/create-source-ledger"
+      : `${dashboardRoute}/ledger/get-source-ledgers`;
   const createAccessibilityLabel =
-    dashboardRoute === "/dashboard/main-staff" ? "Mở sổ ghi được phân công" : "Tạo sổ ghi";
+    dashboardRoute === "/dashboard/manager"
+      ? "T\u1ea1o s\u1ed5 ghi"
+      : "M\u1edf danh s\u00e1ch s\u1ed5 ghi";
 
   const isNavItemActive = (route?: string, activePrefix?: string) => {
     if (!route) {
       return false;
     }
 
-    if (route === "/dashboard/manager" || route === "/dashboard/main-staff") {
+    if (dashboardRoutes.includes(route as DashboardRoute)) {
       return pathname === route;
     }
 
@@ -68,15 +74,25 @@ export default function DashboardLayout() {
   );
 }
 
+const getDashboardRouteFromPathname = (pathname: string): DashboardRoute => {
+  if (pathname.startsWith("/dashboard/main-staff")) {
+    return "/dashboard/main-staff";
+  }
+
+  if (pathname.startsWith("/dashboard/second-staff")) {
+    return "/dashboard/second-staff";
+  }
+
+  return "/dashboard/manager";
+};
+
 const getNavItems = (dashboardRoute: DashboardRoute) => {
   const ledgerRoute =
-    dashboardRoute === "/dashboard/main-staff"
-      ? "/dashboard/main-staff/ledger/get-source-ledgers"
-      : "/dashboard/manager/ledger/get-source-ledgers";
+    dashboardRoute === "/dashboard/manager"
+      ? "/dashboard/manager/ledger/get-source-ledgers"
+      : `${dashboardRoute}/ledger/get-source-ledgers`;
   const ledgerPrefix =
-    dashboardRoute === "/dashboard/main-staff"
-      ? "/dashboard/main-staff/ledger"
-      : "/dashboard/manager/ledger";
+    dashboardRoute === "/dashboard/manager" ? "/dashboard/manager/ledger" : `${dashboardRoute}/ledger`;
 
   return [
     { label: "Dashboard", icon: Grid2X2, route: dashboardRoute },
