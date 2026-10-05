@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Check, PenLine } from "lucide-react-native";
+import { Check } from "lucide-react-native";
+import { SignatureCapture } from "../../../../_components/signature-capture";
 
 const sourceRows = [
   { label: "Nhà cung cấp", value: "Công ty TNHH Hải Sản Biển Đông" },
   { label: "Loại nguồn", value: "Tàu cá" },
-  { label: "Tàu cá", value: "VN-12345 — Ocean Star" },
+  { label: "Tàu cá", value: "VN-12345 - Ocean Star" },
 ];
 
 const catchRows = [
@@ -20,6 +22,7 @@ const catchRows = [
 export default function MainStaffConfirmInfoScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const sourceId = Array.isArray(id) ? id[0] : id;
   const suffix = sourceId ? `?id=${encodeURIComponent(sourceId)}` : "";
 
@@ -39,11 +42,7 @@ export default function MainStaffConfirmInfoScreen() {
       <SummaryCard title="Thông tin nguồn cá" rows={sourceRows} />
       <SummaryCard title="Thông tin đánh bắt" rows={catchRows} />
 
-      <Text style={styles.signatureTitle}>Chữ ký số</Text>
-      <Pressable style={({ pressed }) => [styles.signatureBox, pressed && styles.pressed]}>
-        <PenLine color="#40516B" size={27} strokeWidth={2.2} />
-        <Text style={styles.signatureText}>Nhấn để ký điện tử</Text>
-      </Pressable>
+      <SignatureCapture onChange={setSignatureImage} titleStyle={styles.signatureTitle} value={signatureImage} />
 
       <View style={styles.actionRow}>
         <Pressable
@@ -53,9 +52,7 @@ export default function MainStaffConfirmInfoScreen() {
           <Text style={styles.secondaryButtonText}>Quay lại</Text>
         </Pressable>
         <Pressable
-          onPress={() =>
-            router.push(`/dashboard/main-staff/ledger/get-source-ledger-detail/success${suffix}`)
-          }
+          onPress={() => router.push(`/dashboard/main-staff/ledger/get-source-ledger-detail/success${suffix}`)}
           style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}
         >
           <Text style={styles.primaryButtonText}>Xác nhận</Text>
@@ -172,23 +169,6 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     marginBottom: 9,
     marginTop: 2,
-  },
-  signatureBox: {
-    width: "100%",
-    height: 110,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1.4,
-    borderColor: "#D9E6F5",
-    borderRadius: 10,
-    borderStyle: "dashed",
-    backgroundColor: "#FBFDFF",
-  },
-  signatureText: {
-    color: "#A0AFC1",
-    fontSize: 12,
-    fontWeight: "700",
-    marginTop: 9,
   },
   actionRow: {
     flexDirection: "row",

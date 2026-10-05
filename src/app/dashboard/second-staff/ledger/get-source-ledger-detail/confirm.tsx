@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { FileText, PenLine } from "lucide-react-native";
+import { FileText } from "lucide-react-native";
+import { SignatureCapture } from "../../../../_components/signature-capture";
 
 const baseRoute = "/dashboard/second-staff/ledger/get-source-ledger-detail";
 
@@ -12,6 +14,7 @@ const inspectionRows = [
 export default function SecondStaffConfirmLedgerScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const sourceId = Array.isArray(id) ? id[0] : id;
   const suffix = sourceId ? `?id=${encodeURIComponent(sourceId)}` : "";
 
@@ -25,7 +28,7 @@ export default function SecondStaffConfirmLedgerScreen() {
         </View>
         <View style={styles.lotText}>
           <Text style={styles.lotCode}>RAW-2026-0529-004</Text>
-          <Text style={styles.lotMeta}>Yellowfin Tuna  •  2,500 kg</Text>
+          <Text style={styles.lotMeta}>Yellowfin Tuna - 2,500 kg</Text>
         </View>
       </View>
 
@@ -47,11 +50,7 @@ export default function SecondStaffConfirmLedgerScreen() {
         </View>
       </View>
 
-      <Text style={styles.signatureTitle}>Chữ ký số</Text>
-      <Pressable style={({ pressed }) => [styles.signatureBox, pressed && styles.pressed]}>
-        <PenLine color="#40516B" size={27} strokeWidth={2.2} />
-        <Text style={styles.signatureText}>Nhấn để ký điện tử</Text>
-      </Pressable>
+      <SignatureCapture onChange={setSignatureImage} titleStyle={styles.signatureTitle} value={signatureImage} />
 
       <View style={styles.actionRow}>
         <Pressable
@@ -184,22 +183,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "900",
     marginBottom: 9,
-  },
-  signatureBox: {
-    height: 110,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1.4,
-    borderColor: "#D9E6F5",
-    borderRadius: 12,
-    borderStyle: "dashed",
-    backgroundColor: "#FBFDFF",
-  },
-  signatureText: {
-    color: "#A0AFC1",
-    fontSize: 12,
-    fontWeight: "700",
-    marginTop: 9,
   },
   actionRow: {
     flexDirection: "row",
